@@ -27,6 +27,15 @@ urlpatterns = [
 	path('registrar_usuario/', views.registrar_usuario, name="registrar_usuario"),
     path("recuperar_clave/", views.recuperar_clave, name="recuperar_clave"),
 	path("verificar_recuperar/", views.verificar_recuperar, name="verificar_recuperar"),
+ 
+ 	# Usuarios CRUD
+	
+	path("usuarios_listar/", views.usuarios, name="usuarios_listar"),
+	path("usuarios_form/", views.usuarios_form, name="usuarios_form"),
+	path("usuarios_crear/", views.usuarios_crear, name="usuarios_crear"),
+	path("usuarios_eliminar/<int:id>", views.usuarios_eliminar, name="usuarios_eliminar"),
+	path("usuarios_formulario_editar/<int:id>", views.usuarios_formulario_editar, name="usuarios_formulario_editar"),
+	path("usuarios_actualizar/", views.usuarios_actualizar, name="usuarios_actualizar"),
 	
 
 	# CRUD de Categorías
@@ -69,4 +78,6 @@ urlpatterns = [
     path("etiquetas_actualizar", views.etiquetas_actualizar, name="etiquetas_actualizar"),
     path("etiquetas_form/", views.etiquetas_form, name="etiquetas_form"),
 
+	#Terminos y condiciones
+ 	path("term_y_cond/", views.term_y_cond, name="term_y_cond"),
 ]

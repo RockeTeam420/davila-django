@@ -50,10 +50,11 @@ class SubCategoriaEtiqueta(models.Model):
 
 class Producto(models.Model):
 	nombre = models.CharField(max_length=254, unique=True)
-	precio = models.FloatField()
+	precio = models.IntegerField()
 	inventario = models.IntegerField()
 	fecha_creacion = models.DateField()
-	categoria = models.ForeignKey(SubCategoriaEtiqueta, on_delete=models.CASCADE )
+	categoria = models.ForeignKey(CategoriaEtiqueta,on_delete=models.CASCADE)
+	etiqueta = models.ForeignKey(SubCategoriaEtiqueta, on_delete=models.CASCADE )
 	foto = models.ImageField(upload_to="fotos_productos/", default="fotos_productos/default.png")
 
 	def __str__(self):

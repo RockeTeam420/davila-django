@@ -23,7 +23,7 @@
 
 <body>
     <nav style="height:110px;" class="navbar navbar-expand-lg bg-dark navbar-dark">
-        <a href="{% url 'index' %}"> <img src="{% static 'tienda/img/icono.png' %}" alt="Logo" style="width:100px; padding:10px" class="rounded-pill"> </a>
+        <a href="{% url 'inicio' %}"> <img src="{% static 'tienda/img/icono.png' %}" alt="Logo" style="width:100px; padding:10px" class="rounded-pill"> </a>
 
         <div class="container-fluid">
                 <ul class="navbar-nav me-auto">
@@ -32,7 +32,7 @@
                             data-bs-toggle="dropdown">Usuario</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item">Registrarse</a>
+                                <a href="{% url 'usuarios_listar' %}" class="dropdown-item">Ver usuarios</a>
                             </li>
 
                             <li>
@@ -170,6 +170,12 @@
                         <div class="form-check mb-3">
                             <a href="{% url 'recuperar_clave' %}">¿HAS OLVIDADO LA CONTRASEÑA?</a>
                         </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="mySwitch" name="switchTyC" value="yes" default="off">
+                            <label class="form-check-label" for="mySwitch"></label>
+                            <a href="{% url 'term_y_cond' %}"> Terminos y condiciones... </a>
+                            <p></p>
+                        </div> 
                         <button type="submit" class="btn btn-dark">REGISTRARSE</button>
                         <button type="submit" class="btn btn-danger">INICIAR SESION</button>
                     </form>
@@ -188,35 +194,38 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                <form action="/action_page.php">
+                <form action="{% url 'registrar_usuario' %}" method="post">
+                    {% csrf_token %}
                     <div class="mb-3 mt-3">
                         <label for="email" class="form-label">Nombre de usuario:</label>
-                        <input type="email" class="form-control" id="email" placeholder="Ingresar nombre de usuario"
-                            name="email" />
+                        <input type="text" class="form-control" id="email" placeholder="Ingresar nombre de usuario"
+                            name="nombre" />
                     </div>
 
                     <div class="mb-3 mt-3">
                         <label for="email" class="form-label">Correo electronico:</label>
                         <input type="email" class="form-control" id="email" placeholder="Ingresar correo"
-                            name="email" />
+                            name="correo" />
                     </div>
 
                     <div class="mb-3">
                         <label for="pwd" class="form-label">Contraseña:</label>
                         <input type="password" class="form-control" id="pwd" placeholder="Ingresar contraseña"
-                            name="pswd" />
+                            name="clave1" />
                     </div>
 
                     <div class="mb-3">
                         <label for="pwd" class="form-label">Confirmar contraseña:</label>
                         <input type="password" class="form-control" id="pwd"
-                            placeholder="Ingresa nuevamente la contraseña" name="pswd" />
+                            placeholder="Ingresa nuevamente la contraseña" name="clave2" />
                     </div>
 
-                    <div class="mb-3">
-                        <label for="pwd" class="form-label">Numero de celular:</label>
-                        <input class="form-control" id="pwd" placeholder="Ingresar numero de celular" name="pswd" />
-                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="mySwitch" name="switchTyC" value="yes" default="off">
+                        <label class="form-check-label" for="mySwitch"></label>
+                        <a href="{% url 'term_y_cond' %}"> Terminos y condiciones... </a>
+                        <p></p>
+                    </div> 
 
                     <button type="submit" class="btn btn-danger">CREAR CUENTA</button>
                 </form>

@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.db import IntegrityError, transaction
 from rest_framework import viewsets 
@@ -67,7 +67,7 @@ class CategoriaViewSet(viewsets.ModelViewSet):
 
 
 class UsuarioViewSet(viewsets.ModelViewSet):	
-	authentication_classes = [TokenAuthentication]
+	# authentication_classes = [TokenAuthentication]
 	permission_classes = [IsAuthenticated]
 	queryset = Usuario.objects.all()
 	serializer_class = UsuarioSerializer
@@ -75,51 +75,147 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 def registrar_usuario(request):
 	if request.method == "POST":
 		nombre = request.POST.get("nombre")
-		correo = request.POST.get("correo")
+		user = request.POST.get("correo")
 		clave1 = request.POST.get("clave1")
 		clave2 = request.POST.get("clave2")
-		if clave1 == clave2:
-			q = Usuario(
+		switch = request.POST.get("switchTyC")
+		if switch:
+			if not nombre or not user:
+				messages.warning(request,"Campos vacios, ingrese datos!!")
+				return redirect("inicio")
+			if not re.match(r"^[a-zA-Z\s]+$", nombre):
+				messages.error(request, f"El nombre solo puede llevar valores alfabeticos")
+			if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", user):
+				messages.error(request, f"El correo ingresado no es valido")
+			if clave1 == clave2:
+				q = Usuario(
 				nombre=nombre,
-				email=correo,
+				email=user,
 				password=hash_password(clave1)
+				)
+				q.save()
+				messages.success(request, "Usuario registrado correctamente!!")
+				return redirect("inicio")
+			else:
+				messages.warning(request, "No concuerdan las contraseñas")
+				return redirect("inicio")
+		else:
+			messages.error(request, "Debe aceptar los terminos y condiciones")
+			return redirect("inicio")
+	else:
+		return redirect("inicio")
+#-------------------
+
+def usuarios(request):
+	q = Usuario.objects.all()
+	contexto = {"data": q}
+	return render(request, "tienda/usuarios/usuarios.html", contexto)
+
+
+
+def usuarios_form(request):
+	return render(request, "tienda/usuarios/usuarios_form.html")
+
+
+def usuarios_crear(request):
+	if request.method == "POST":
+		nombre = request.POST.get("nombre")
+		email = request.POST.get("email")
+		password = request.POST.get("password")
+		rol = request.POST.get("rol")
+		if not re.match(r"^[a-zA-Z\s]+$", nombre):
+			messages.error(request, f"El nombre solo puede llevar valores alfabeticos")
+		try:
+			q = CategoriaEtiqueta(
+				nombre = nombre,
+				email = email,
+				password = password,
+				rol = rol
 			)
 			q.save()
-			messages.success(request, "Usuario registrado correctamente!!")
-			return redirect("index")
-		else:
-			messages.warning(request, "No concuerdan las contraseñas")
-			return redirect("registrar_usuario")
-	else:
-		return render(request, "tienda/login/registro.html")
+			messages.success(request, "Guardado correctamente!!")
+		except Exception as e:
+			messages.error(request, f"Error: {e}")
+		return redirect("usuarios_listar")
 
+	else:
+		messages.warning(request, "Error: No se enviaron datos...")
+		return redirect("usuarios_listar")
+
+
+def usuarios_eliminar(request, id):
+	try:
+		q = Usuario.objects.get(pk=id)
+		q.delete()
+		messages.success(request, "Usuario eliminado correctamente!!")
+	except Exception as e:
+		messages.error(request, f"Error: {e}")
+
+	return redirect("usuarios_listar")
+
+
+def usuarios_formulario_editar(request, id):
+	q = Usuario.objects.get(pk=id)
+	contexto = {"data": q}
+	return render(request, "tienda/usuarios/usuarios_formulario_editar.html", contexto)
+
+def usuarios_actualizar(request):
+	if request.method == "POST":
+		id = request.POST.get("id")
+		nombre = request.POST.get("nombre")
+		email = request.POST.get("email")
+		password = request.POST.get("password")
+		rol = request.POST.get("rol")
+
+		try:
+			q = CategoriaEtiqueta.objects.get(pk=id)
+			q.nombre = nombre
+			q.email = email
+			q.password = password
+			q.rol = rol
+			q.save()
+			messages.success(request, "Usuario actualizado correctamente!!")
+		except Exception as e:
+			messages.error(request, f"Error: {e}")
+	else:
+		messages.warning(request, "Error: No se enviaron datos...")
+
+	return redirect("usuarios_listar")
+#---------------
 
 def login(request):
 	if request.method == "POST":
 		user = request.POST.get("email")
 		passw = request.POST.get("password")
+		switch = request.POST.get("switchTyC")
 		# select * from Usuario where correo = "user" and clave = "passw"
 		if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", user):
 			messages.error(request, f"El correo ingresado no es valido")
-		try:
-			q = Usuario.objects.get(email=user, password=passw)
-			# Crear variable de sesión
-			request.session["logueo"] = {
-				"id": q.id,
-				"nombre": q.nombre,
-				"rol": q.rol,
-				"nombre_rol": q.get_rol_display()
-			}
-			request.session["carrito"] = []
-			request.session["items"] = 0
-			messages.success(request, f"Bienvenido {q.nombre}!!")
-			return redirect("inicio")
-		except Exception as e:
-			messages.error(request, "Error: Usuario o contraseña incorrectos...")
-			return redirect("index")
+		if switch:
+			try:
+				q = Usuario.objects.get(email=user)
+				if verify_password(passw, q.password):
+				# Crear variable de sesión
+					request.session["logueo"] = {
+						"id": q.id,
+						"nombre": q.nombre,
+						"rol": q.rol,
+						"nombre_rol": q.get_rol_display()
+					}
+					request.session["carrito"] = []
+					request.session["items"] = 0
+					messages.success(request, f"Bienvenido {q.nombre}!!")
+				return redirect("inicio")
+			except Exception as e:
+				messages.error(request, f"{e} Error: Usuario o contraseña incorrectos...")
+				return redirect("inicio")
+		else:
+			messages.error(request, "Debe aceptar los terminos y condiciones")
+			return redirect('inicio')
+
 	else:
 		messages.warning(request, "Error: No se enviaron datos...")
-		return redirect("index")
+		return redirect("inicio")
 
 
 def logout(request):
@@ -236,6 +332,10 @@ def verificar_recuperar(request):
 from .decorador_especial import *
 
 
+
+
+
+
 @login_requerido
 def categorias(request):
 	q = CategoriaEtiqueta.objects.all()
@@ -323,9 +423,8 @@ def productos_crear(request):
 		precio = request.POST.get("precio")
 		inventario = request.POST.get("inventario")
 		fecha_creacion = request.POST.get("fecha_creacion")
-		categoria = SubCategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
-		if not re.match(r"^[a-zA-Z\s]+$", nombre):
-			messages.error(request, f"El nombre solo puede llevar valores alfabeticos")
+		categoria = CategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
+		etiqueta = SubCategoriaEtiqueta.objects.get(pk=request.POST.get("etiqueta"))
 		if not re.match(r"^\d", precio):
 			messages.error(request, f"El precio solo puede llevar valores numericos")
 		if not re.match(r"^\d", inventario):
@@ -336,7 +435,8 @@ def productos_crear(request):
 				precio=precio,
 				inventario=inventario,
 				fecha_creacion=fecha_creacion,
-				categoria=categoria
+				categoria=categoria,
+				etiqueta=etiqueta
 			)
 			q.save()
 			messages.success(request, "Guardado correctamente!!")
@@ -373,9 +473,7 @@ def productos_actualizar(request):
 		precio = request.POST.get("precio")
 		inventario = request.POST.get("inventario")
 		fecha_creacion = request.POST.get("fecha_creacion")
-		categoria = CategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
-		if not re.match(r"^[a-zA-Z\s]+$", nombre):
-			messages.error(request, f"El nombre solo puede llevar valores alfabeticos")
+		categoria = SubCategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
 		if not re.match(r"^\d", precio):
 			messages.error(request, f"El precio solo puede llevar valores numericos")
 		if not re.match(r"^\d", inventario):
@@ -390,7 +488,7 @@ def productos_actualizar(request):
 			q.save()
 			messages.success(request, "Producto actualizado correctamente!!")
 		except Exception as e:
-			messages.error(request, f"Error: No se enviaron datos...")
+			messages.error(request, f"Error {e}")
 	else:
 		messages.warning(request, "Error: No se enviaron datos...")
 
@@ -714,3 +812,6 @@ def etiquetas_actualizar(request):
 		messages.warning(request, "Error: No se enviaron datos...")
 
 	return redirect("etiquetas_listar")
+
+def term_y_cond(request):
+    return render(request, "tienda/term_y_cond/term_y_cond.html")

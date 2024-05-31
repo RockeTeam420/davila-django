@@ -17,6 +17,7 @@
                 <th>Inventario</th>
                 <th>Fecha de Creación</th>
                 <th>Categoría</th>
+                <th>Etiquetas</th>
                 <th>Operaciones</th>
             </tr>
         </thead>
@@ -29,6 +30,7 @@
                     <td>{{ r.inventario }}</td>
                     <td>{{ r.fecha_creacion }}</td>
                     <td>{{ r.categoria }}</td>
+                    <td>{{ r.etiqueta }}</td>
                     <td>
                         <a class="btn btn-danger" href="javascript:eliminar('{% url 'productos_eliminar' r.id %}')">Eliminar</a>
                         <a class="btn btn-info" href="{% url 'productos_formulario_editar' r.id %}">Editar</a>
