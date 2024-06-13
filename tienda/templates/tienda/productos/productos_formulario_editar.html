@@ -25,6 +25,13 @@
                 <option value="{{ c.id }}" {% if data.categoria.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
             {% endfor %}
         </select>
+        <label class="form-control">Etiqueta</label>
+        <select class="form-control" name="etiqueta">
+            <option value="">Seleccione</option>
+            {% for c in etiqueta %}
+                <option value="{{ c.id }}" {% if data.etiqueta.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
+            {% endfor %}
+        </select>
 
         <button type="submit" class="btn btn-success">Actualizar</button>
     </form>

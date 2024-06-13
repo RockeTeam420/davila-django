@@ -463,7 +463,8 @@ def productos_eliminar(request, id):
 def productos_formulario_editar(request, id):
 	q = Producto.objects.get(pk=id)
 	c = CategoriaEtiqueta.objects.all()
-	contexto = {"data": q, "categoria": c}
+	e = SubCategoriaEtiqueta.objects.all()
+	contexto = {"data": q, "categoria": c, "etiqueta":e}
 	return render(request, "tienda/productos/productos_formulario_editar.html", contexto)
 
 def productos_actualizar(request):
@@ -473,7 +474,8 @@ def productos_actualizar(request):
 		precio = request.POST.get("precio")
 		inventario = request.POST.get("inventario")
 		fecha_creacion = request.POST.get("fecha_creacion")
-		categoria = SubCategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
+		categoria = CategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
+		etiqueta = SubCategoriaEtiqueta.objects.get(pk=request.POST.get("etiqueta"))
 		if not re.match(r"^\d", precio):
 			messages.error(request, f"El precio solo puede llevar valores numericos")
 		if not re.match(r"^\d", inventario):
@@ -485,6 +487,7 @@ def productos_actualizar(request):
 			q.inventario = inventario
 			q.fecha_creacion = fecha_creacion
 			q.categoria = categoria
+			q.etiqueta = etiqueta
 			q.save()
 			messages.success(request, "Producto actualizado correctamente!!")
 		except Exception as e:

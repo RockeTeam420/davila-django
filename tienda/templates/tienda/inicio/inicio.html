@@ -2,6 +2,7 @@
 {% load static %}
 {% load humanize %}
 {% block titulo %}Inicio{% endblock %}
+
 {% block estilos %}
 <link rel="stylesheet" href="{% static 'tienda/css/main.css' %}">
 {% endblock %}
@@ -12,11 +13,13 @@
 <div id="main">
     <div id="filtro">
         {% csrf_token %}
+
         <div id="botones">
-            <a href="{% url 'inicio' %}" type="button" class="btn btn-warning">Ver todos</a>
-            <a href="{% url 'inicio' %}" type="button" class="btn btn-success">Filtrar</a>
+            <a href="{% url 'inicio' %}" type="button" class="btn custom-btn">Ver todos</a>
+            <a href="{% url 'inicio' %}" type="button" class="btn custom-btn">Filtrar</a>
 
         </div>
+
         {% for c in etq %}
         <a id="categorias" href="{% url 'inicio' %}?cat={{ c.id }}">{{ c.nombre }}</a>
         <div>
@@ -28,6 +31,8 @@
 
         
     </div>
+
+
 
     <div id="productos">
 
@@ -41,7 +46,7 @@
         <div class="row" style="clear:left;">
             {% endif %}
 
-            <div class="card m-2 p-2 align-items-center" style="float:left;width: 18rem;">
+            <div class="card m-2 p-2 align-items-center" style="float:left;width: 18rem; margin-top:0%;">
                 <img src="{{ p.foto.url }}" class="card-img-top" alt="{{ p.nombre }}" style="width:70%">
                 <div class="card-body">
                     <h5 class="card-title">{{ p.nombre }}</h5>
@@ -54,15 +59,17 @@
                     <input type="hidden" name="id" id="id_{{ p.id }}" value="{{ p.id }}" />
                     <input type="number" name="cantidad" id="cantidad_{{ p.id }}" min="1" max="{{ p.inventario }}"
                         value="1" size="3" />
+
                     <button type="button" onclick="add_carrito(`{% url 'carrito_add' %}`, {{ p.id }});"
-                        class="btn btn-info">Add Carrito</button>
+                        class="btn custom-btn">Add Carrito</button>
+                 
+
                 </form>
                 {% endif %}
-                <div class="card-footer">
+                <div class="card-footer">   
                     <small class="text-body-secondary">{{ p.categoria }}</small>
 
-                    {% if p.inventario >= 1 and p.inventario <= 3 %} <br><small class="text-danger">Quedan sólo {{
-                            p.inventario }} unidades...</small>
+                    {% if p.inventario >= 1 and p.inventario <= 3 %} <br><small class="text-danger">Quedan sólo {{ p.inventario }} unidades...</small>
                         {% elif p.inventario == 0 %}
                         <br><small class="text-danger">Producto agotado!!</small>
                         {% endif %}
@@ -76,8 +83,7 @@
         {% endfor %}
 
 
-    </div>
-    <div id="otros">
+
 
 
 

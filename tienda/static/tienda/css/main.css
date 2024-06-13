@@ -1,19 +1,21 @@
 #main{
     display: flex;
     flex-direction: row;
-    border: 2px solid blueviolet ;
     height: 100%;
     width: 100%;
-    padding: 0.5%;
+    padding: 10px;
+    padding-top: 20px;
 }
+
 #filtro{
     display: flex;
     flex-direction: column;
-    border: 2px solid green ;
+    align-items:normal;
     height: 100%;
-    width: 20%;
+    width: 40%;
     padding: 1% 5% 1% 5%;
     background-color: gainsboro;
+    margin-right: 30px;
 }
 
 #botones{
@@ -23,7 +25,7 @@
 }
 
 #categorias{
-    color: #feab01;
+    color: #000000;
 }
 
 #etiquetas{
@@ -33,14 +35,15 @@
 #productos{
     display: flex;
     flex-direction: column;
-    border: 2px solid blue ;
+    align-items: normal;
     height: 100%;
-    width: 60%;
+    width: 100%;
+    
+
 }
-#otros{
-    display: flex;
-    flex-direction: row;
-    border: 2px solid red ;
-    height: 100%;
-    width: 20%;
+
+.custom-btn{
+    background-color: #000000;
+    color: white;
+    
 }
