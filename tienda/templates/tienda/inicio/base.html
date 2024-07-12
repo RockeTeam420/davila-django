@@ -102,9 +102,9 @@
                     </button>
                     
                     
-                    <button style="background-color: #feab01" class="btn"  data-bs-toggle="modal" data-bs-target="#registrar">
+                    <a style="background-color: #feab01" class="btn"  href="{% url 'registro' %}">
                         REGISTARSE
-                    </button>
+                    </a>
                 </div>
                 {% endif %}
                 
@@ -184,56 +184,6 @@
         </div>
     </div>
 
-    <div class="modal fade" id="registrar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content" id="formRegistrar">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">
-                        REGISTRARSE
-                    </h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                <form action="{% url 'registrar_usuario' %}" method="post">
-                    {% csrf_token %}
-                    <div class="mb-3 mt-3">
-                        <label for="email" class="form-label">Nombre de usuario:</label>
-                        <input type="text" class="form-control" id="email" placeholder="Ingresar nombre de usuario"
-                            name="nombre" />
-                    </div>
-
-                    <div class="mb-3 mt-3">
-                        <label for="email" class="form-label">Correo electronico:</label>
-                        <input type="email" class="form-control" id="email" placeholder="Ingresar correo"
-                            name="correo" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="pwd" class="form-label">Contraseña:</label>
-                        <input type="password" class="form-control" id="pwd" placeholder="Ingresar contraseña"
-                            name="clave1" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="pwd" class="form-label">Confirmar contraseña:</label>
-                        <input type="password" class="form-control" id="pwd"
-                            placeholder="Ingresa nuevamente la contraseña" name="clave2" />
-                    </div>
-
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="mySwitch" name="switchTyC" value="yes" default="off">
-                        <label class="form-check-label" for="mySwitch"></label>
-                        <a href="{% url 'term_y_cond' %}"> Terminos y condiciones... </a>
-                        <p></p>
-                    </div> 
-
-                    <button type="submit" class="btn btn-danger">CREAR CUENTA</button>
-                </form>
-            </div>
-            </div>
-        </div>
-
-    </div>
    
      
 

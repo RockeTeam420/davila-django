@@ -72,6 +72,10 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 	queryset = Usuario.objects.all()
 	serializer_class = UsuarioSerializer
 
+def registro(request):
+    return render(request,"tienda/login/registro.html")
+
+
 def registrar_usuario(request):
 	if request.method == "POST":
 		nombre = request.POST.get("nombre")

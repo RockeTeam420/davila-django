@@ -38,8 +38,14 @@
     align-items: normal;
     height: 100%;
     width: 100%;
-    
+}
 
+.Productoimg{
+    display: flex;
+    width: 250px;
+    height: 250px;
+    align-items: center;
+    justify-content: center;
 }
 
 .custom-btn{

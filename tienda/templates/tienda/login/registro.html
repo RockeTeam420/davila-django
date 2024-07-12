@@ -12,6 +12,12 @@
     <input type="email" name="correo" class="form-control" placeholder="Correo" required=""><br>
     <input type="password" name="clave1" class="form-control" placeholder="Contraseña" required=""><br>
     <input type="password" name="clave2" class="form-control" placeholder="Repita Contraseña" required=""><br>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="mySwitch" name="switchTyC" value="yes" default="off">
+        <label class="form-check-label" for="mySwitch"></label>
+        <a href="{% url 'term_y_cond' %}"> Terminos y condiciones... </a>
+        <p></p>
+    </div> 
     <button type="submit" class="btn btn-info">Registrarse</button>
 </form>
 

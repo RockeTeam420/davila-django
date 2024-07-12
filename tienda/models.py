@@ -14,6 +14,7 @@ class Usuario(AbstractUser):
 		(1, "Administrador"),
 		(2, "Despachador"),
 		(3, "Cliente"),
+		(4, "Domiciliario")
 	)
 	rol = models.IntegerField(choices=ROLES, default=3)
 	foto = models.ImageField(upload_to="fotos/", default="fotos/default.png", blank=True)
@@ -96,3 +97,21 @@ class DetalleVenta(models.Model):
 	def __str__(self):
 		return f"{self.id} - {self.venta}"
 
+
+
+class Pedido(models.Model):
+    id_producto = models.ForeignKey(Producto, on_delete=models.DO_NOTHING)
+    id_usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
+    direccion = models.TextField()
+    contacto = models.IntegerField()
+    TIPO_PAGO = (
+		(1, "Tarjeta de credito"),
+		(2, "Tarjeta debito"),
+		(3, "Efectivo")
+	)
+    tipo_pago = models.IntegerField(choices=TIPO_PAGO)
+    
+    def __str__(self):
+    		return f"{self.tipo_pago}"
+    
+    

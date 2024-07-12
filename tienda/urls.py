@@ -24,6 +24,7 @@ urlpatterns = [
 	# Autenticación de usuarios del sistema
 	path('login/', views.login, name="login"),
 	path('logout/', views.logout, name="logout"),
+	path("registro/", views.registro, name="registro"),
 	path('registrar_usuario/', views.registrar_usuario, name="registrar_usuario"),
     path("recuperar_clave/", views.recuperar_clave, name="recuperar_clave"),
 	path("verificar_recuperar/", views.verificar_recuperar, name="verificar_recuperar"),

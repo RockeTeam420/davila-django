@@ -47,7 +47,9 @@
             {% endif %}
 
             <div class="card m-2 p-2 align-items-center" style="float:left;width: 18rem; margin-top:0%;">
-                <img src="{{ p.foto.url }}" class="card-img-top" alt="{{ p.nombre }}" style="width:70%">
+                <div class="Productoimg">
+                    <img src="{{ p.foto.url }}"  alt="{{ p.nombre }}" style="width:70%">
+                </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ p.nombre }}</h5>
                     <p class="card-text">
