@@ -236,19 +236,7 @@ def logout(request):
 
 def inicio(request):
 	logueo = request.session.get("logueo", False)
-
 	categorias = CategoriaEtiqueta.objects.all()
-	count = 0
-	etiquetas = []
-	for categoria in categorias:
-		name = {'nombre': categoria.nombre,
-				'subEtiquetas': []
-				}
-		etiquetas.append(name)
-		subcat = SubCategoriaEtiqueta.objects.filter(id_categoria_etiqueta=categoria.id)
-		for subcategoria in subcat:
-			etiquetas[count]['subEtiquetas'].append(subcategoria)
-		count += 1
 	cat = request.GET.get("cat")
 	if cat == None:
 		productos = Producto.objects.all()
@@ -257,7 +245,7 @@ def inicio(request):
 		productos = Producto.objects.filter(categoria=c)
 		
 
-	contexto = {"data": productos, "cat": categorias, "etq": etiquetas}
+	contexto = {"data": productos, "cat": categorias}
 	return render(request, "tienda/inicio/inicio.html", contexto)
 	
 def recuperar_clave(request):
@@ -822,3 +810,77 @@ def etiquetas_actualizar(request):
 
 def term_y_cond(request):
     return render(request, "tienda/term_y_cond/term_y_cond.html")
+
+
+
+def devoluciones(request):
+    q = Devoluciones.objects.all()
+    contexto = {"data": q}
+    return render(request, "tienda/devoluciones/devoluciones.html", contexto)
+
+def devoluciones_form(request):
+	q = CategoriaEtiqueta.objects.all()
+	contexto = {"data": q}
+	return render(request, "tienda/devoluciones/devoluciones_form.html", contexto)
+
+def devoluciones_crear(request):
+	if request.method == "POST":
+		nombre = request.POST.get("nombre")
+		email = request.POST.get("email")
+		telefono = request.POST.get("telefono")
+		descripcion = request.POST.get("descripcion")
+		try:
+			q = Devoluciones(
+				nombre=nombre,
+				email=email,
+				telefono=telefono,
+				descripcion= descripcion,
+			)
+			q.save()
+			messages.success(request, "Guardado correctamente!!")
+		except Exception as e:
+			messages.error(request, f"Error: No se enviaron datos...")
+		return redirect("devoluciones")
+
+	else:
+		messages.warning(request, "Error: No se enviaron datos...")
+		return redirect("devoluciones")
+
+def devoluciones_formulario_editar(request, id):
+	q = Devoluciones.objects.get(pk=id)
+	contexto = {"data": q}
+	return render(request, "tienda/devoluciones/devoluciones_formulario_editar.html", contexto)
+
+def devoluciones_actualizar(request):
+	if request.method == "POST":
+		id = request.POST.get("id")
+		nombre = request.POST.get("nombre")
+		email = request.POST.get("email")
+		telefono = request.POST.get("telefono")
+		descripcion = request.POST.get("descripcion")
+		
+		try:
+			q = Devoluciones.objects.get(pk=id)
+			q.nombre = nombre
+			q.email = email
+			q.telefono = telefono
+			q.descripcion = descripcion
+			
+			q.save()
+			messages.success(request, "Devolucion actualizada correctamente!!")
+		except Exception as e:
+			messages.error(request, f"Error {e}")
+	else:
+		messages.warning(request, "Error: No se enviaron datos...")
+
+	return redirect("devoluciones")
+
+def devoluciones_eliminar(request, id):
+	try:
+		q = Devoluciones.objects.get(pk=id)
+		q.delete()
+		messages.success(request, "Devolucion eliminada correctamente!!")
+	except Exception as e:
+		messages.error(request, f"Error: {e}")
+
+	return redirect("devoluciones")

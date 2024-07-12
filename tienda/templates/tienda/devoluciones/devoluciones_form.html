@@ -1,0 +1,28 @@
+{% extends 'tienda/inicio/base.html' %}
+{% load static %}
+
+{% block titulo %}Crear Devolucion{% endblock %}
+
+{% block contenedor %}
+
+    <h1 class="titul">Crear Devolucion</h1>
+    <form action="{% url 'devoluciones_crear' %}" method="post">
+        {% csrf_token %}
+        <label class="form-control">Nombre</label>
+        <input class="form-control" type="text" name="nombre" /><br>
+
+        <label class="form-control">Correo electronico</label>
+        <input class="form-control" type="email" name="email" /><br>
+
+        <label class="form-control">Telefono</label>
+        <input class="form-control" type="number" name="telefono" /><br>
+
+        <label class="form-control">Motivo de devolucion</label>
+        <input class="form-control" type="text" name="descripcion" /><br>
+
+
+
+        <button type="submit" class="btn btn-success">Guardar</button>
+    </form>
+
+{% endblock %}

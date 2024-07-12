@@ -1,0 +1,28 @@
+{% extends 'tienda/inicio/base.html' %}
+{% load static %}
+
+{% block titulo %}Actualizar Devoluciones{% endblock %}
+
+{% block contenedor %}
+
+    <h1 class="titul">Actualizar Devoluciones ({{ data.id }})</h1>
+    <form action="{% url 'devoluciones_actualizar' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{{ data.id }}">
+        <label class="form-control">Nombre</label>
+        <input class="form-control" type="text" name="nombre" value="{{ data.nombre }}" /><br>
+
+        <label class="form-control">Correo electronico</label>
+        <input class="form-control" type="email" name="email" value="{{ data.email }}" /><br>
+
+        <label class="form-control">Telefono</label>
+        <input class="form-control" type="number" name="telefono" value="{{ data.telefono }}" /><br>
+
+        <label class="form-control">Motivo de devolucion</label>
+        <input class="form-control" type="text" name="descripcion" value="{{ data.descripcion}}" /><br>
+
+    
+        <button type="submit" class="btn btn-success">Actualizar</button>
+    </form>
+
+{% endblock %}

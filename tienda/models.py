@@ -114,4 +114,11 @@ class Pedido(models.Model):
     def __str__(self):
     		return f"{self.tipo_pago}"
     
+class Devoluciones(models.Model):
+    nombre = models.CharField(max_length=254)
+    email = models.EmailField(max_length=254, unique=True)
+    telefono = models.IntegerField()
+    descripcion = models.TextField()
     
+    def __str__(self):
+        return self.nombre

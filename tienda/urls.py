@@ -81,4 +81,13 @@ urlpatterns = [
 
 	#Terminos y condiciones
  	path("term_y_cond/", views.term_y_cond, name="term_y_cond"),
+  
+  
+	# CRUD de Devoluciones
+	path("devoluciones/", views.devoluciones, name="devoluciones"),
+	path("devoluciones_form/", views.devoluciones_form, name="devoluciones_form"),
+	path("devoluciones_crear/", views.devoluciones_crear, name="devoluciones_crear"),
+	path("devoluciones_formulario_editar/<int:id>", views.devoluciones_formulario_editar, name="devoluciones_formulario_editar"),
+	path("devoluciones_actualizar/", views.devoluciones_actualizar, name="devoluciones_actualizar"),
+	path("devoluciones_eliminar/<int:id>", views.devoluciones_eliminar, name="devoluciones_eliminar"),
 ]

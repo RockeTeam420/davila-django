@@ -20,7 +20,7 @@
 
         </div>
 
-        {% for c in etq %}
+        {% for c in cat %}
         <a id="categorias" href="{% url 'inicio' %}?cat={{ c.id }}">{{ c.nombre }}</a>
         <div>
             {% for e in c.subEtiquetas %}
