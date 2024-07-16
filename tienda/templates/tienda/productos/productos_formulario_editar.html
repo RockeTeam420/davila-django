@@ -26,13 +26,12 @@
             {% endfor %}
         </select>
         <label class="form-control">Etiqueta</label>
-        <select class="form-control" name="etiqueta">
-            <option value="">Seleccione</option>
-            {% for c in etiqueta %}
-                <option value="{{ c.id }}" {% if data.etiqueta.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
-            {% endfor %}
-        </select>
-
+        {% for e in etiqueta %}
+        <div>
+            <input class="" type="checkbox" name="etiqueta" value="{{ e.id }}">
+            <label for="nombre"> {{ e.nombre }} </label>
+        </div>
+        {% endfor %}
         <button type="submit" class="btn btn-success">Actualizar</button>
     </form>
 

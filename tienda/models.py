@@ -40,7 +40,6 @@ class CategoriaEtiqueta(models.Model):
 	def __str__(self):
 		return self.nombre
 	
-	
 class SubCategoriaEtiqueta(models.Model):
 	nombre = models.CharField(max_length=254)
 	id_categoria_etiqueta = models.ForeignKey(CategoriaEtiqueta, on_delete=models.DO_NOTHING)
@@ -55,15 +54,10 @@ class Producto(models.Model):
 	inventario = models.IntegerField()
 	fecha_creacion = models.DateField()
 	categoria = models.ForeignKey(CategoriaEtiqueta,on_delete=models.CASCADE)
-	etiqueta = models.ForeignKey(SubCategoriaEtiqueta, on_delete=models.CASCADE )
 	foto = models.ImageField(upload_to="fotos_productos/", default="fotos_productos/default.png")
 
 	def __str__(self):
 		return self.nombre
-
-
-
-
 
 class ProductoSubCategoria(models.Model):
 	id_producto = models.ForeignKey(Producto, on_delete=models.DO_NOTHING)

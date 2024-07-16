@@ -30,7 +30,9 @@
                     <td>{{ r.inventario }}</td>
                     <td>{{ r.fecha_creacion }}</td>
                     <td>{{ r.categoria }}</td>
-                    <td>{{ r.etiqueta }}</td>
+                    {% for e in etiqueta %}
+                    <td> {{ e.id }}</td>
+                    {% endfor %}
                     <td>
                         <a class="btn btn-danger" href="javascript:eliminar('{% url 'productos_eliminar' r.id %}')">Eliminar</a>
                         <a class="btn btn-info" href="{% url 'productos_formulario_editar' r.id %}">Editar</a>
