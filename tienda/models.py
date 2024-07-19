@@ -64,9 +64,7 @@ class ProductoSubCategoria(models.Model):
 	id_sub_categoria_etiqueta = models.ForeignKey(SubCategoriaEtiqueta, on_delete=models.DO_NOTHING)
 
 	def __str__(self):
-		return self.id_producto
-	
-
+		return f'{self.id_producto}, {self.id_sub_categoria_etiqueta}'
 
 class Venta(models.Model):
 	fecha_venta = models.DateTimeField(auto_now=True)

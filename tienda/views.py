@@ -399,8 +399,28 @@ def categorias_actualizar(request):
 @login_requerido
 def productos(request):
 	q = Producto.objects.all()
-	x = ProductoSubCategoria.objects.all()
-	contexto = {"data": q , "etiqueta":x}
+	productos=[]
+	#print(x)
+	for i in q:
+		x = ProductoSubCategoria.objects.all()
+		#print(i.id)
+		producto = {
+			'nombre': i.nombre,
+			'id': i.id,
+			'etiqueta': [],
+			'precio': i.precio,
+			'inventario': i.inventario,
+			'fecha_creacion': i.fecha_creacion,
+			'categoria': i.categoria
+		}
+		for y in x:
+			if i.id == y.id_producto.id:
+				tag = SubCategoriaEtiqueta.objects.get(pk=y.id_sub_categoria_etiqueta.id)
+				producto["etiqueta"].append(tag)
+		#print(producto)
+		productos.append(producto)
+	print(productos)
+	contexto = { "data": productos }
 	return render(request, "tienda/productos/productos.html", contexto)
 
 
@@ -466,46 +486,62 @@ def productos_eliminar(request, id):
 def productos_formulario_editar(request, id):
 	q = Producto.objects.get(pk=id)
 	c = CategoriaEtiqueta.objects.all()
-	e = ProductoSubCategoria.objects.all()
+	e = SubCategoriaEtiqueta.objects.all()
 	contexto = {"data": q, "categoria": c, "etiqueta":e}
 	return render(request, "tienda/productos/productos_formulario_editar.html", contexto)
 
 def productos_actualizar(request):
-	if request.method == "POST":
-		id = request.POST.get("id")
-		nombre = request.POST.get("nombre")
-		precio = request.POST.get("precio")
-		inventario = request.POST.get("inventario")
-		fecha_creacion = request.POST.get("fecha_creacion")
-		categoria = CategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
-		etiquetas = request.POST.getlist("etiqueta")
-		if not re.match(r"^\d", precio):
-			messages.error(request, f"El precio solo puede llevar valores numericos")
-		if not re.match(r"^\d", inventario):
-			messages.error(request, f"El inventario solo puede llevar valores numericos")
-		try:
-			q = Producto.objects.get(pk=id)
-			q.nombre = nombre
-			q.precio = precio
-			q.inventario = inventario
-			q.fecha_creacion = fecha_creacion
-			q.categoria = categoria
-			q.save()
-   
-			for etiqueta_id in etiquetas:
-				etiqueta = SubCategoriaEtiqueta.objects.get(pk=etiqueta_id)
-				ProductoSubCategoria.objects.create(
-					id_producto = q,
-					id_sub_categoria_etiqueta = etiqueta
-				)
-   
-			messages.success(request, "Producto actualizado correctamente!!")
-		except Exception as e:
-			messages.error(request, f"Error {e}")
-	else:
-		messages.warning(request, "Error: No se enviaron datos...")
+    if request.method == "POST":
+        id_producto = request.POST.get("id")
+        nombre = request.POST.get("nombre")
+        precio = request.POST.get("precio")
+        inventario = request.POST.get("inventario")
+        fecha_creacion = request.POST.get("fecha_creacion")
+        categoria_id = request.POST.get("categoria")
+        etiquetas_ids = request.POST.getlist("etiquetas")
 
-	return redirect("productos_listar")
+        # Validación básica de los campos de precio e inventario
+        if not precio.isdigit():
+            messages.error(request, "El precio solo puede llevar valores numéricos")
+            return redirect("productos_listar")
+
+        if not inventario.isdigit():
+            messages.error(request, "El inventario solo puede llevar valores numéricos")
+            return redirect("productos_listar")
+
+        try:
+            # Obtener el producto a actualizar
+            producto = Producto.objects.get(pk=id_producto)
+
+            # Actualizar los campos del producto
+            producto.nombre = nombre
+            producto.precio = precio
+            producto.inventario = inventario
+            producto.fecha_creacion = fecha_creacion
+            producto.categoria_id = categoria_id
+
+            # Guardar el producto actualizado
+            producto.save()
+
+            # Limpiar y actualizar las etiquetas asociadas al producto
+            ProductoSubCategoria.objects.filter(id_producto=producto).delete()  # Limpiar etiquetas existentes
+
+            for etiqueta_id in etiquetas_ids:
+                etiqueta = SubCategoriaEtiqueta.objects.get(pk=etiqueta_id)
+                ProductoSubCategoria.objects.create(id_producto=producto, id_sub_categoria_etiqueta=etiqueta)
+
+            messages.success(request, "Producto actualizado correctamente")
+        except Producto.DoesNotExist:
+            messages.error(request, "El producto especificado no existe")
+        except SubCategoriaEtiqueta.DoesNotExist:
+            messages.error(request, "Una de las etiquetas especificadas no existe")
+        except Exception as e:
+            messages.error(request, f"Error al actualizar el producto: {e}")
+
+    else:
+        messages.warning(request, "Error: No se enviaron datos")
+
+    return redirect("productos_listar")
 
 
 def ver_perfil(request):
