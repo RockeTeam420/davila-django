@@ -498,7 +498,7 @@ def productos_actualizar(request):
         inventario = request.POST.get("inventario")
         fecha_creacion = request.POST.get("fecha_creacion")
         categoria_id = request.POST.get("categoria")
-        etiquetas_ids = request.POST.getlist("etiquetas")
+        etiquetas_ids = request.POST.getlist("etiqueta")
 
         # Validación básica de los campos de precio e inventario
         if not precio.isdigit():
@@ -528,7 +528,10 @@ def productos_actualizar(request):
 
             for etiqueta_id in etiquetas_ids:
                 etiqueta = SubCategoriaEtiqueta.objects.get(pk=etiqueta_id)
-                ProductoSubCategoria.objects.create(id_producto=producto, id_sub_categoria_etiqueta=etiqueta)
+                ProductoSubCategoria.objects.create(
+					id_producto = producto,
+					id_sub_categoria_etiqueta = etiqueta
+				)
 
             messages.success(request, "Producto actualizado correctamente")
         except Producto.DoesNotExist:

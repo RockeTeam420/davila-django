@@ -11,7 +11,7 @@ def login_requerido(vista):
             return c
         else:
             messages.info(request, "No está autorizado.")
-            return redirect("index")
+            return redirect("inicio")
 
     return nueva_funcion
 
