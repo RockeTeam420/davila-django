@@ -10,6 +10,20 @@ from django.core.mail import BadHeaderError, EmailMessage
 import re
 from .crypt import *
 
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.hashers import make_password
+from django.db.models.signals import post_save
+
 
 # Importamos todos los modelos de la base de datos
 from .models import *
@@ -941,3 +955,61 @@ def devoluciones_eliminar(request, id):
 		messages.error(request, f"Error: {e}")
 
 	return redirect("devoluciones")
+
+
+class RegistrarUsuario(APIView):
+    def post(self, request):
+        print(request.data)
+        if request.method == "POST":
+            nombre = request.data["nombre"]
+            email = request.data["correo"]
+            clave1 = request.data["password"]
+            clave2 = request.data["confirmPassword"]
+            nick = email
+            if nombre == "" or email == "" or clave1 == "" or clave2 == "":
+                return Response(data={'message': 'Todos los campos son obligatorios', 'respuesta': 400}, status=400)
+            elif not re.fullmatch(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+				
+                return Response(data={'message': 'El correo no es válido', 'respuesta': 400}, status=400)
+            elif clave1 != clave2:
+                return Response(data={'message': 'Las contraseñas no coinciden', 'respuesta': 400}, status=400)
+            else:
+                try:
+                    q = Usuario(
+                        nombre=nombre,
+                        email=email,
+                        password=make_password(clave1)
+                    )
+                    q.save()
+                except Exception as e:
+                    return Response(data={'message': 'El Usuario ya existe', 'respuesta': 409}, status=409)
+
+        # Renderiza la misma página de registro con los mensajes de error
+        return Response(data={'message': f'Usuario creado correctamente tu nick es: {nick}', 'respuesta': 201}, status=201)
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.get_or_create(user=instance)
+
+
+class CustomAuthToken(ObtainAuthToken):
+	def post(self, request, *args, **kwargs):
+		serializer = self.serializer_class(data=request.data,
+		context={'request': request})
+		serializer.is_valid(raise_exception=True)
+		user = serializer.validated_data['username']
+		# traer datos del usuario para bienvenida y ROL
+		usuario = Usuario.objects.get(email=user)
+		token, created = Token.objects.get_or_create(user=usuario)
+
+		return Response({
+			'token': token.key,
+			'user': {
+				'user_id': usuario.pk,
+				'email': usuario.email,
+				'nombre': usuario.nombre,
+				'rol': usuario.rol,
+				'foto': usuario.foto.url
+			}
+		})

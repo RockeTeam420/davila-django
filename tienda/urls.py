@@ -20,6 +20,9 @@ urlpatterns = [
     
 	#API
     path('api/1.0/', include(router.urls)),
+    path('api/1.0/token-auth/', views.CustomAuthToken.as_view()),
+	path('api/1.0/api-auth/', include('rest_framework.urls')),
+    path('api/1.0/registrar_usuario/', views.RegistrarUsuario.as_view(), name='registrar_usuario'),
 
 	# Autenticación de usuarios del sistema
 	path('login/', views.login, name="login"),
