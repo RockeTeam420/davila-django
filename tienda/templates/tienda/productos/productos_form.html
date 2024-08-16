@@ -6,32 +6,33 @@
 {% block contenedor %}
 
     <h1 class="titul">Crear Producto</h1>
-    <form action="{% url 'productos_crear' %}" method="post">
-        {% csrf_token %}
-        <label class="form-control">Nombre</label>
-        <input class="form-control" type="text" name="nombre" /><br>
-        <label class="form-control">Precio</label>
-        <input class="form-control" type="number" name="precio" /><br>
-        <label class="form-control">Inventario</label>
-        <input class="form-control" type="number" name="inventario" /><br>
-        <label class="form-control">Fecha de Creación</label>
-        <input class="form-control" type="date" name="fecha_creacion" /><br>
+    <div class="formularioProd">
+        <form action="{% url 'productos_crear' %}" method="post">
+            {% csrf_token %}
+            <label class="form-control">Nombre</label>
+            <input class="form-control" type="text" name="nombre" /><br>
+            <label class="form-control">Precio</label>
+            <input class="form-control" type="number" name="precio" /><br>
+            <label class="form-control">Inventario</label>
+            <input class="form-control" type="number" name="inventario" /><br>
+            <label class="form-control">Fecha de Creación</label>
+            <input class="form-control" type="date" name="fecha_creacion" /><br>
 
-        <label class="form-control">Categoría</label>
-        <select class="form-control" name="categoria">
-            {% for c in data %}
-                <option value="{{ c.id }}">{{ c.nombre }}</option>
+            <label class="form-control">Categoría</label>
+            <select class="form-control" name="categoria">
+                {% for c in data %}
+                    <option value="{{ c.id }}">{{ c.nombre }}</option>
+                {% endfor %}
+            </select>
+            <label class="form-control">Etiqueta</label>
+            {% for e in etiqueta %}
+            <div>
+                <input class="" type="checkbox" name="etiqueta" value="{{ e.id }}">
+                <label for="nombre"> {{ e.nombre }} </label>
+            </div>
             {% endfor %}
-        </select>
-        <label class="form-control">Etiqueta</label>
-        {% for e in etiqueta %}
-        <div>
-            <input class="" type="checkbox" name="etiqueta" value="{{ e.id }}">
-            <label for="nombre"> {{ e.nombre }} </label>
-        </div>
-        {% endfor %}
 
-        <button type="submit" class="btn btn-success">Guardar</button>
-    </form>
-
+            <button type="submit" class="btn btn-success">Guardar</button>
+        </form>
+    </div>
 {% endblock %}
