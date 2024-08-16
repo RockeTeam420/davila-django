@@ -42,7 +42,7 @@ class CategoriaEtiqueta(models.Model):
 	
 class SubCategoriaEtiqueta(models.Model):
 	nombre = models.CharField(max_length=254)
-	id_categoria_etiqueta = models.ForeignKey(CategoriaEtiqueta, on_delete=models.DO_NOTHING)
+	id_categoria_etiqueta = models.ForeignKey(CategoriaEtiqueta, on_delete=models.CASCADE)
 
 	def __str__(self):
 		return self.nombre
@@ -60,15 +60,15 @@ class Producto(models.Model):
 		return self.nombre
 
 class ProductoSubCategoria(models.Model):
-	id_producto = models.ForeignKey(Producto, on_delete=models.DO_NOTHING)
-	id_sub_categoria_etiqueta = models.ForeignKey(SubCategoriaEtiqueta, on_delete=models.DO_NOTHING)
+	id_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+	id_sub_categoria_etiqueta = models.ForeignKey(SubCategoriaEtiqueta, on_delete=models.CASCADE)
 
 	def __str__(self):
 		return f'{self.id_producto}, {self.id_sub_categoria_etiqueta}'
 
 class Venta(models.Model):
 	fecha_venta = models.DateTimeField(auto_now=True)
-	usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
+	usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 	ESTADOS = (
 		(1, 'Pendiente'),
 		(2, 'Enviado'),
@@ -81,8 +81,8 @@ class Venta(models.Model):
 
 
 class DetalleVenta(models.Model):
-	venta = models.ForeignKey(Venta, on_delete=models.DO_NOTHING)
-	producto = models.ForeignKey(Producto, on_delete=models.DO_NOTHING)
+	venta = models.ForeignKey(Venta, on_delete=models.CASCADE)
+	producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
 	cantidad = models.IntegerField()
 	precio_historico = models.IntegerField()
 
@@ -92,8 +92,8 @@ class DetalleVenta(models.Model):
 
 
 class Pedido(models.Model):
-    id_producto = models.ForeignKey(Producto, on_delete=models.DO_NOTHING)
-    id_usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
+    id_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     direccion = models.TextField()
     contacto = models.IntegerField()
     TIPO_PAGO = (
