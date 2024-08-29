@@ -51,7 +51,8 @@ class SubCategoriaEtiqueta(models.Model):
 	
 
 class Producto(models.Model):
-	nombre = models.CharField(max_length=254, unique=True)
+	nombre = models.CharField(max_length=254)
+	informacion = models.CharField(max_length=254)
 	precio = models.IntegerField()
 	inventario = models.IntegerField()
 	fecha_creacion = models.DateField()
@@ -60,6 +61,19 @@ class Producto(models.Model):
 
 	def __str__(self):
 		return self.nombre
+
+class Tallas(models.Model):    
+	talla = models.CharField(max_length=254)
+ 
+	def __str__(self):
+    		return self.talla
+   
+class ProductoTallas(models.Model):
+	id_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+	id_talla = models.ForeignKey(Tallas, on_delete=models.CASCADE)
+ 
+	def __str__(self):
+    		return self.nombre
 
 class ProductoSubCategoria(models.Model):
 	id_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
@@ -73,7 +87,7 @@ class Venta(models.Model):
 	usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 	ESTADOS = (
 		(1, 'Pendiente'),
-		(2, 'Enviado'),
+		(2, 'Pagada'),
 		(3, 'Rechazada'),
 	)
 	estado = models.IntegerField(choices=ESTADOS, default=1)

@@ -86,6 +86,10 @@ urlpatterns = [
  	path("term_y_cond/", views.term_y_cond, name="term_y_cond"),
   
   
+   	#tallas
+	path("tallas_listar/", views.tallas_listar, name="tallas_listar"),
+	path("talla_form/", views.tallas_form, name="tallas_form"),
+  
 	# CRUD de Devoluciones
 	path("devoluciones/", views.devoluciones, name="devoluciones"),
 	path("devoluciones_form/", views.devoluciones_form, name="devoluciones_form"),

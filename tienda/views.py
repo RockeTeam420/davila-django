@@ -441,7 +441,8 @@ def productos(request):
 def productos_form(request):
 	q = CategoriaEtiqueta.objects.all()
 	e = SubCategoriaEtiqueta.objects.all()
-	contexto = {"data": q, "etiqueta": e}
+	t = Tallas.objects.all()
+	contexto = {"data": q, "etiqueta": e, "talla":t}
 	return render(request, "tienda/productos/productos_form.html", contexto)
 
 
@@ -1013,3 +1014,36 @@ class CustomAuthToken(ObtainAuthToken):
 				'foto': usuario.foto.url
 			}
 		})
+  
+def tallas_listar(request):
+    t = Tallas.objects.all()
+    contexto = {"talla":t}
+    return render (request, "tienda/tallas/tallas.html", contexto)
+
+def tallas_form(request):
+	return render(request, "tienda/tallas/tallas_form.html")
+
+def tallas_crear(request):
+    if request.method == "POST":
+        talla = request.POST.get("talla")
+        if not re.match(r"/^[A-Za-z0-9\s]+$/g", talla):
+            messages.error(request, f"La talla solo puede llevar valores numericos o letras")
+        
+        try:
+            q = Tallas(
+				talla = talla
+			)
+            q.save()
+            messages.success(request, "Guardado correctamente!!")
+        except Exception as e:
+            messages.error(request, f"Error: {e}")
+        return redirect("tallas_listar")
+
+  
+  
+def ventalista(request):
+    v = Venta.objects.all(),
+    d = DetalleVenta.objects.all(),
+    contexto = {"venta": v,"detalle": d}
+    return render(request, "tienda/ventas/ventas.html")
+

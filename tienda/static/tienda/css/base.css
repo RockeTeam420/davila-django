@@ -36,3 +36,10 @@ footer {
 .formularioProd{
     margin: 40px;
 }
+
+.termYcond{
+    display: flex;
+    flex-direction: column;
+    padding: 3%;
+    
+}
