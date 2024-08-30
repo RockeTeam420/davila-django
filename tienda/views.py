@@ -425,7 +425,8 @@ def productos(request):
 			'precio': i.precio,
 			'inventario': i.inventario,
 			'fecha_creacion': i.fecha_creacion,
-			'categoria': i.categoria
+			'categoria': i.categoria,
+			'imagen': i.foto,
 		}
 		for y in x:
 			if i.id == y.id_producto.id:
@@ -1026,7 +1027,7 @@ def tallas_form(request):
 def tallas_crear(request):
     if request.method == "POST":
         talla = request.POST.get("talla")
-        if not re.match(r"/^[A-Za-z0-9\s]+$/g", talla):
+        if not re.match(r'^[a-zA-Z0-9]+$', talla):
             messages.error(request, f"La talla solo puede llevar valores numericos o letras")
         
         try:

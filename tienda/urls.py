@@ -89,6 +89,7 @@ urlpatterns = [
    	#tallas
 	path("tallas_listar/", views.tallas_listar, name="tallas_listar"),
 	path("talla_form/", views.tallas_form, name="tallas_form"),
+	path("tallas_crear/", views.tallas_crear, name="tallas_crear"),
   
 	# CRUD de Devoluciones
 	path("devoluciones/", views.devoluciones, name="devoluciones"),

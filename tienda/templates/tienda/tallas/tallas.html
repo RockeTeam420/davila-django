@@ -5,19 +5,24 @@
 
 {% block contenedor %}
 
-<h1>Productos</h1>
-<a class="btn btn-success" href="{% url 'productos_form' %}">Agregar</a>
+<h1>TALLAS</h1>
+<a class="btn btn-success" href="{% url 'tallas_form' %}">Agregar</a>
+<br>
 <table class="table">
     <thead>
         <tr>
-            TALLAS CREADAS
+            <th>Talla</th>
+            <th>Operaciones</th>
         </tr>
     </thead>
     <tbody>
         {% for t in talla %}
-           <td>
-            {{ t.talla }}
-           </td>
+            <tr>
+                <td>
+                    {{ t.talla }}
+                </td>
+                
+            </tr>
         {% endfor %}
     </tbody>
 </table>

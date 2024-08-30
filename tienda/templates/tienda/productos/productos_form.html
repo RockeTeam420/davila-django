@@ -14,7 +14,7 @@
             <label class="form-control">Precio</label>
             <input class="form-control" type="number" name="precio" /><br>
             <label class="form-control">Informacion</label>
-            <input class="form-control" type="number" name="Informacion" /><br>
+            <input class="form-control" type="text" name="Informacion" /><br>
             <label class="form-control">Inventario</label>
             <input class="form-control" type="number" name="inventario" /><br>
             <label class="form-control">Fecha de Creación</label>
@@ -33,7 +33,8 @@
                 <label for="nombre"> {{ e.nombre }} </label>
             </div>
             {% endfor %}
-
+            <label class="form-control">Imagen</label>
+            <input class="form-control" type="file" name="imagen" /><br>
             <button type="submit" class="btn btn-success">Guardar</button>
         </form>
     </div>
