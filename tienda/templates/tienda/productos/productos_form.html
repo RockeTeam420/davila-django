@@ -17,9 +17,15 @@
             <input class="form-control" type="text" name="Informacion" /><br>
             <label class="form-control">Inventario</label>
             <input class="form-control" type="number" name="inventario" /><br>
-            <label class="form-control">Fecha de Creación</label>
+            <label class="form-control">Fecha de Creación</label>            
             <input class="form-control" type="date" name="fecha_creacion" /><br>
-
+            <label class="form-control"> Tallas a seleccionar </label>    
+            {% for t in talla %}
+                <div>
+                    <input class="" type="checkbox" name="tallas" value="{{ t.id }}">
+                    <label for="nombre"> {{ t.nombre }} </label>
+                </div>
+            {% endfor %}
             <label class="form-control">Categoría</label>
             <select class="form-control" name="categoria">
                 {% for c in data %}

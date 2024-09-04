@@ -90,6 +90,13 @@ urlpatterns = [
 	path("tallas_listar/", views.tallas_listar, name="tallas_listar"),
 	path("talla_form/", views.tallas_form, name="tallas_form"),
 	path("tallas_crear/", views.tallas_crear, name="tallas_crear"),
+	path("tallas_actualizar/", views.tallas_actualizar, name="tallas_actualizar"),
+	path("tallas_eliminar/<int:id>", views.tallas_eliminar, name="tallas_eliminar"),
+ 	path("tallas_editar/<int:id>", views.tallas_editar, name="tallas_editar"),
+  
+  
+  	#Ventas
+	path("venta_listar/", views.venta_listar, name="venta_listar"),
   
 	# CRUD de Devoluciones
 	path("devoluciones/", views.devoluciones, name="devoluciones"),

@@ -12,7 +12,7 @@ class CategoriaAdmin(admin.ModelAdmin):
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-	list_display = ["id", "nombre", "precio", "inventario", "fecha_creacion", "categoria", 'foto', 'ver_foto']
+	list_display = ["id", "nombre", "precio", "inventario", "fecha_creacion", "categoria"]
 	search_fields = ["nombre"]
 	list_filter = ["categoria", "fecha_creacion"]
 	list_editable = ["categoria"]
@@ -60,5 +60,7 @@ class ProductoSubCategoriaAdmin(admin.ModelAdmin):
 	list_display = ['id', 'id_producto', 'id_sub_categoria_etiqueta']
 
 
-
+@admin.register(Tallas)
+class TallasAdmin(admin.ModelAdmin):
+    list_display = ['id', 'talla']
 

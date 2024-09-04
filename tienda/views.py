@@ -186,7 +186,7 @@ def usuarios_actualizar(request):
 		rol = request.POST.get("rol")
 
 		try:
-			q = CategoriaEtiqueta.objects.get(pk=id)
+			q = Usuario.objects.get(pk=id)
 			q.nombre = nombre
 			q.email = email
 			q.password = password
@@ -426,7 +426,6 @@ def productos(request):
 			'inventario': i.inventario,
 			'fecha_creacion': i.fecha_creacion,
 			'categoria': i.categoria,
-			'imagen': i.foto,
 		}
 		for y in x:
 			if i.id == y.id_producto.id:
@@ -455,11 +454,12 @@ def productos_crear(request):
 		fecha_creacion = request.POST.get("fecha_creacion")
 		categoria = CategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
 		etiquetas = request.POST.getlist("etiqueta")
+		foto = request.FILES["imagen"]
 		if not re.match(r"^\d", precio):
 			messages.error(request, f"El precio solo puede llevar valores numericos")
 		if not re.match(r"^\d", inventario):
 			messages.error(request, f"El inventario solo puede llevar valores numericos")
-   
+		print(foto)
 		try:
 			q = Producto(
 				nombre=nombre,
@@ -467,7 +467,7 @@ def productos_crear(request):
 				inventario=inventario,
 				fecha_creacion=fecha_creacion,
 				categoria=categoria,
-    				
+				foto=foto
 			)
 			q.save()
 
@@ -1040,11 +1040,46 @@ def tallas_crear(request):
             messages.error(request, f"Error: {e}")
         return redirect("tallas_listar")
 
+def tallas_editar(request, id):
+	q = Tallas.objects.get(pk=id)
+	contexto = {"talla": q}
+	return render(request, "tienda/tallas/tallas_editar.html", contexto)
+	         
+
+def tallas_actualizar(request):
+	if request.method == "POST":
+		id = request.POST.get('id')
+		talla = request.POST.get("talla")
+		print(talla)
+		if not re.match(r'^[a-zA-Z0-9]+$', talla):
+				messages.error(request, f"La talla solo puede llevar valores numericos o letras")
+		try:
+			q = Tallas.objects.get(pk=id)
+			q.talla = talla
+			q.save()
+			messages.success(request, "Guardado correctamente!!")
+		except Exception as e:
+			messages.error(request, f"Error: {e}")
+		return redirect("tallas_listar")
+			
+def tallas_eliminar(request, id):
+	try:
+		q = Tallas.objects.get(pk=id)
+		q.delete()
+		messages.success(request, "Talla eliminada correctamente!!")
+	except Exception as e:
+		messages.error(request, f"Error: {e}")
+
+	return redirect("tallas_listar")
   
-  
-def ventalista(request):
+def venta_listar(request):
     v = Venta.objects.all(),
     d = DetalleVenta.objects.all(),
     contexto = {"venta": v,"detalle": d}
-    return render(request, "tienda/ventas/ventas.html")
+    return render(request, "tienda/ventas/ventas.html", contexto)
+
+def venta_form(request):
+    	return render(request, "tienda/ventas/ventas_form.html")
+ 
+
 

@@ -20,8 +20,11 @@
             <tr>
                 <td>
                     {{ t.talla }}
+                </td>    
+                <td>
+                    <a class="btn btn-danger" href="javascript:eliminar('{% url 'tallas_eliminar' t.id %}')">Eliminar</a>
+                    <a class="btn btn-info" href="{% url 'tallas_editar' t.id %}">Editar</a>
                 </td>
-                
             </tr>
         {% endfor %}
     </tbody>
