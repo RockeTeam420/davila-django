@@ -32,6 +32,12 @@ footer {
     align-items: center;
 }
 
+#categorias{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3%;
+}
 
 .formularioProd{
     margin: 40px;

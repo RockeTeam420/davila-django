@@ -15,20 +15,32 @@
         {% csrf_token %}
 
         <div id="botones">
+
             <a href="{% url 'inicio' %}" type="button" class="btn custom-btn">Ver todos</a>
             <a href="{% url 'inicio' %}" type="button" class="btn custom-btn">Filtrar</a>
 
         </div>
-
-        {% for c in cat %}
-        <a id="categorias" href="{% url 'inicio' %}?cat={{ c.id }}">{{ c.nombre }}</a>
         <div>
-            {% for e in c.subEtiquetas %}
-            <input type="checkbox" id="etiquetas" href="{% url 'inicio' %}?cat={{ c.id }}">{{ e.nombre }}</input><br>
-            {% endfor %}
-        </div>
-        {% endfor %}
 
+            <div id="categorias">
+
+                {% for c in cat %}
+                    <a class="btn custom-btn2" id="categorias" href="{% url 'inicio' %}?cat={{ c.id }}">{{ c.nombre }}</a>
+
+                    {% for e in etq %}
+                        {% for x in e %}
+                            {% if x.id_categoria_etiqueta.id == c.id %}
+                                <a id="etiquetas" href="{% url 'inicio' %}?etq={{ x.id }}">{{ x.nombre }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                    {% endfor %}
+                {% endfor %}
+
+            </div>
+
+
+        </div>
         
     </div>
 

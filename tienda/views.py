@@ -250,16 +250,36 @@ def logout(request):
 
 def inicio(request):
 	logueo = request.session.get("logueo", False)
+ 
 	categorias = CategoriaEtiqueta.objects.all()
+	etq_categorias=[]
+	for c in categorias:
+		etiquetas = SubCategoriaEtiqueta.objects.filter(id_categoria_etiqueta=c)
+		etq_categorias.append(etiquetas)
+	
+		
+     
 	cat = request.GET.get("cat")
+	etq = request.GET.getlist("etq")
+ 
+	
 	if cat == None:
-		productos = Producto.objects.all()
+    		productos = Producto.objects.all()
 	else:
 		c = CategoriaEtiqueta.objects.get(pk=cat)
 		productos = Producto.objects.filter(categoria=c)
+  
+	print(etq)
+
+	#if etq == None:
+    #		pass
+	#else:
+	#	e = SubCategoriaEtiqueta.objects.get(pk=etq)
+	#	productos = productos.filter(etiqueta=e)
+
 		
 
-	contexto = {"data": productos, "cat": categorias}
+	contexto = {"data": productos, "cat": categorias, "etq": etq_categorias}
 	return render(request, "tienda/inicio/inicio.html", contexto)
 	
 def recuperar_clave(request):
