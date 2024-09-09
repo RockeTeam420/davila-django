@@ -12,36 +12,38 @@
 
 <div id="main">
     <div id="filtro">
-        {% csrf_token %}
+        <form action="{% url 'inicio' %}" method="post">
 
-        <div id="botones">
+            {% csrf_token %}
 
-            <a href="{% url 'inicio' %}" type="button" class="btn custom-btn">Ver todos</a>
-            <a href="{% url 'inicio' %}" type="button" class="btn custom-btn">Filtrar</a>
+            <div id="botones">
 
-        </div>
-        <div>
-
-            <div id="categorias">
-
-                {% for c in cat %}
-                    <a class="btn custom-btn2" id="categorias" href="{% url 'inicio' %}?cat={{ c.id }}">{{ c.nombre }}</a>
-
-                    {% for e in etq %}
-                        {% for x in e %}
-                            {% if x.id_categoria_etiqueta.id == c.id %}
-                                <a id="etiquetas" href="{% url 'inicio' %}?etq={{ x.id }}">{{ x.nombre }}</a>
-                            {% endif %}
-                        {% endfor %}
-                        
-                    {% endfor %}
-                {% endfor %}
+                <a href="{% url 'inicio' %}" type="button" class="btn custom-btn">Ver todos</a>
+                <a href="{% url 'inicio'  %}" type="button" class="btn custom-btn">Filtrar</a>
 
             </div>
+            <div>
 
+                <div id="categorias">
 
-        </div>
-        
+                    {% for c in cat %}
+                        <a class="btn custom-btn2" id="categorias" href="{% url 'inicio' %}?cat={{ c.id }}">{{ c.nombre }}</a>
+                        {% for e in etq %}
+                            {% for x in e %}
+                                {% if x.id_categoria_etiqueta.id == c.id %}
+                                    <div id="etiquetas" class="checkbox-container">
+                                        <input name="{{ x.id }}" id="{{ x.id }}" type="checkbox" href="{% url 'inicio' %}?etq={{ x.id }}"></input>
+                                        <label class="checkbox-label" for="{{ x.id }}" > {{ x.nombre }} </label>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+
+                    {% endfor %}
+
+                </div>
+            </div>
+        </form>
     </div>
 
 

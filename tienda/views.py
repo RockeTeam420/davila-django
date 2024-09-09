@@ -250,7 +250,10 @@ def logout(request):
 
 def inicio(request):
 	logueo = request.session.get("logueo", False)
+	
  
+	etiquetas = SubCategoriaEtiqueta.objects.all()
+	productos = Producto.objects.all()
 	categorias = CategoriaEtiqueta.objects.all()
 	etq_categorias=[]
 	for c in categorias:
@@ -260,7 +263,7 @@ def inicio(request):
 		
      
 	cat = request.GET.get("cat")
-	etq = request.GET.getlist("etq")
+	etq = request.GET.getlist("servicios")
  
 	
 	if cat == None:
@@ -268,14 +271,12 @@ def inicio(request):
 	else:
 		c = CategoriaEtiqueta.objects.get(pk=cat)
 		productos = Producto.objects.filter(categoria=c)
-  
+	
 	print(etq)
 
-	#if etq == None:
-    #		pass
-	#else:
-	#	e = SubCategoriaEtiqueta.objects.get(pk=etq)
-	#	productos = productos.filter(etiqueta=e)
+	if etq == None:
+    		productos = Producto.objects.all()
+	
 
 		
 
