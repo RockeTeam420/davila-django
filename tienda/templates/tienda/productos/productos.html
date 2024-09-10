@@ -16,6 +16,7 @@
                 <th>Precio</th>
                 <th>Inventario</th>
                 <th>Fecha de Creación</th>
+                <th>Tallas</th>
                 <th>Categoría</th>
                 <th>Etiquetas</th>
                 <th>Operaciones</th>
@@ -29,10 +30,21 @@
                     <td class="text-end">${{ r.precio|floatformat:0|intcomma }}</td>
                     <td>{{ r.inventario }}</td>
                     <td>{{ r.fecha_creacion }}</td>
+                    <td>
+                        <div>
+                            {% for talla in r.tallas %}
+                                <li>{{ talla }}</li>
+                            {% endfor %}
+                        </div>
+                    </td>                    
                     <td>{{ r.categoria }}</td>
-                    {% for e in r.etiqueta %}
-                        <td> {{ e.nombre }}</td>
-                    {% endfor %}
+                    <td>
+                        <div>
+                            {% for e in r.etiqueta %}
+                                <li>{{ e }}</li>
+                            {% endfor %}
+                        </div>
+                    </td>
                     <td>
                         <a class="btn btn-danger" href="javascript:eliminar('{% url 'productos_eliminar' r.id %}')">Eliminar</a>
                         <a class="btn btn-info" href="{% url 'productos_formulario_editar' r.id %}">Editar</a>
