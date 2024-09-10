@@ -27,19 +27,24 @@
 
         <div class="container-fluid">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
-                            data-bs-toggle="dropdown">Usuario</a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="{% url 'usuarios_listar' %}" class="dropdown-item">Ver usuarios</a>
-                            </li>
 
-                            <li>
-                                <a class="dropdown-item" href="#">Editar perfil</a>
-                            </li>
-                        </ul>
-                    </li>
+
+                    {% if request.session.logueo.rol == 1 %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
+                                data-bs-toggle="dropdown">Usuario</a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="{% url 'usuarios_listar' %}" class="dropdown-item">Ver usuarios</a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item" href="#">Editar perfil</a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% endif %}
+
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
@@ -79,20 +84,21 @@
                             </li>
                         </ul>
                     </li>
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
-                            data-bs-toggle="dropdown">Productos</a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item" href="{% url 'productos_listar' %}">Ver productos</a>
-                            </li>
-                            <li><a class="dropdown-item" href="#">Queja</a></li>
-                            <li><a class="dropdown-item" href="{% url 'categorias_listar' %}">Categorias</a></li>
-                            <li><a class="dropdown-item" href="{% url 'etiquetas_listar' %}">Etiquetas</a></li>
-                            <li><a class="dropdown-item" href="{% url 'tallas_listar' %}">Tallas</a></li>
-                        </ul>
-                    </li>
+                    {% if request.session.logueo.rol == 1 %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
+                                data-bs-toggle="dropdown">Productos</a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'productos_listar' %}">Ver productos</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#">Queja</a></li>
+                                <li><a class="dropdown-item" href="{% url 'categorias_listar' %}">Categorias</a></li>
+                                <li><a class="dropdown-item" href="{% url 'etiquetas_listar' %}">Etiquetas</a></li>
+                                <li><a class="dropdown-item" href="{% url 'tallas_listar' %}">Tallas</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
                 </ul>
                 {% if not request.session.logueo %}
                 
