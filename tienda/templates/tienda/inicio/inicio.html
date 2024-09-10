@@ -70,15 +70,14 @@
                         ${{ p.precio|floatformat:0|intcomma }}
                     </p>                    
                 </div>
+                <label for="talla">Tallas:</label><br>
                 <div class="tallas">
-                    <input type="radio" id="talla-s" name="talla" value="S">
-                    <label for="talla-s">S</label>                
-                    <input type="radio" id="talla-m" name="talla" value="M">
-                    <label for="talla-m">M</label>                
-                    <input type="radio" id="talla-l" name="talla" value="L">
-                    <label for="talla-l">L</label>                
-                    <input type="radio" id="talla-xl" name="talla" value="XL">
-                    <label for="talla-xl">XL</label>
+                    
+                    {% for t in tallas %}
+                        <input type="radio" id="talla" name="talla" value="{{ t.id }}">
+                        <label for="talla">{{ t.talla }}</label>
+                    {% endfor %}
+
                 </div>
                 {% if p.inventario > 0 %}
                 <form>

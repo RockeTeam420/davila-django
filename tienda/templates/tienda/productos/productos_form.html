@@ -7,7 +7,7 @@
 
     <h1 class="titul">Crear Producto</h1>
     <div class="formularioProd">
-        <form action="{% url 'productos_crear' %}" method="post">
+        <form action="{% url 'productos_crear' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <label class="form-control">Nombre</label>
             <input class="form-control" type="text" name="nombre" /><br>
@@ -22,8 +22,8 @@
             <label class="form-control"> Tallas a seleccionar </label>    
             {% for t in talla %}
                 <div>
-                    <input class="" type="checkbox" name="tallas" value="{{ t.id }}">
-                    <label for="nombre"> {{ t.nombre }} </label>
+                    <input class="" type="checkbox" name="talla" value="{{ t.id }}">
+                    <label for="nombre"> {{ t.talla }} </label>
                 </div>
             {% endfor %}
             <label class="form-control">Categoría</label>
@@ -40,7 +40,7 @@
             </div>
             {% endfor %}
             <label class="form-control">Imagen</label>
-            <input class="form-control" type="file" name="imagen" /><br>
+            <input class="form-control" type="file" name="foto" /><br>
             <button type="submit" class="btn btn-success">Guardar</button>
         </form>
     </div>

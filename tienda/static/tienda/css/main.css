@@ -62,7 +62,7 @@
 #productos{
     display: flex;
     flex-direction: column;
-    align-items: normal;
+    align-items: normal;fbf
     height: 100%;
     width: 100%;
 }

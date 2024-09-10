@@ -250,8 +250,10 @@ def logout(request):
 
 def inicio(request):
 	logueo = request.session.get("logueo", False)
-	
  
+ 
+	proTallas = ProductoTalla.objects.all()
+	tallas = Tallas.objects.all()
 	etiquetas = SubCategoriaEtiqueta.objects.all()
 	productos = Producto.objects.all()
 	categorias = CategoriaEtiqueta.objects.all()
@@ -260,7 +262,7 @@ def inicio(request):
 		etiquetas = SubCategoriaEtiqueta.objects.filter(id_categoria_etiqueta=c)
 		etq_categorias.append(etiquetas)
 	
-		
+	
      
 	cat = request.GET.get("cat")
 	etq = request.GET.getlist("servicios")
@@ -280,7 +282,7 @@ def inicio(request):
 
 		
 
-	contexto = {"data": productos, "cat": categorias, "etq": etq_categorias}
+	contexto = {"data": productos, "cat": categorias, "etq": etq_categorias, "tallas":tallas}
 	return render(request, "tienda/inicio/inicio.html", contexto)
 	
 def recuperar_clave(request):
@@ -475,12 +477,13 @@ def productos_crear(request):
 		fecha_creacion = request.POST.get("fecha_creacion")
 		categoria = CategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
 		etiquetas = request.POST.getlist("etiqueta")
-		foto = request.FILES["imagen"]
+		tallas = request.POST.getlist("talla")
+		foto = request.FILES["foto"]
+		print(f'crear: {etiquetas}, {tallas}')
 		if not re.match(r"^\d", precio):
-			messages.error(request, f"El precio solo puede llevar valores numericos")
+    			messages.error(request, f"El precio solo puede llevar valores numericos")
 		if not re.match(r"^\d", inventario):
-			messages.error(request, f"El inventario solo puede llevar valores numericos")
-		print(foto)
+    			messages.error(request, f"El inventario solo puede llevar valores numericos")
 		try:
 			q = Producto(
 				nombre=nombre,
@@ -493,15 +496,23 @@ def productos_crear(request):
 			q.save()
 
 			for etiqueta_id in etiquetas:
-				etiqueta =SubCategoriaEtiqueta.objects.get(pk=etiqueta_id)
+				etiqueta = SubCategoriaEtiqueta.objects.get(pk=etiqueta_id)
+				print(etiqueta)
 				ProductoSubCategoria.objects.create(
 					id_producto = q,
 					id_sub_categoria_etiqueta = etiqueta
 				)
+
+			for talla_id in tallas:
+				talla = Tallas.objects.get(pk=talla_id)
+				ProductoTallas.objects.create(
+					id_producto = q,
+					id_talla = talla
+				)
    
 			messages.success(request, "Guardado correctamente!!")
 		except Exception as e:
-			messages.error(request, f"Error: No se enviaron datos...")
+			messages.error(request, f"Error: No se enviaron datos...{e}")
 		return redirect("productos_listar")
 
 	else:
