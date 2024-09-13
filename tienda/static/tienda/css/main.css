@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #main {
+=======
+#main{
+>>>>>>> origin/main
     display: flex;
     flex-direction: row;
     height: 100%;
@@ -7,10 +11,17 @@
     padding-top: 20px;
 }
 
+<<<<<<< HEAD
 #filtro {
     display: flex;
     flex-direction: column;
     align-items: normal;
+=======
+#filtro{
+    display: flex;
+    flex-direction: column;
+    align-items:normal;
+>>>>>>> origin/main
     height: 100%;
     width: 40%;
     padding: 1% 5% 1% 5%;
@@ -18,12 +29,17 @@
     margin-right: 30px;
 }
 
+<<<<<<< HEAD
 #botones {
+=======
+#botones{
+>>>>>>> origin/main
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
+<<<<<<< HEAD
 #categorias {
     color: #000000;
 }
@@ -46,4 +62,66 @@
     background-color: #000000;
     color: white;
 
+=======
+#categorias{
+    color: #000000;
+}
+
+#etiquetas{
+    padding: 5px;
+    font-size: 1.15rem;
+    color: black;
+}
+
+.checkbox-label{
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 5px;
+    border: 2px solid #feab01;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: background-color 0.3s, border-color 0.3s;
+    color: black;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 24px;
+}
+
+.checkbox-container input[type="checkbox"]{
+    display: none;
+}
+
+.checkbox-container input[type="checkbox"]:checked + .checkbox-label {
+    background-color: #feab01;
+    border: 2px solid black;
+
+}
+
+#productos{
+    display: flex;
+    flex-direction: column;
+    align-items: normal;fbf
+    height: 100%;
+    width: 100%;
+}
+
+.Productoimg{
+    display: flex;
+    width: 250px;
+    height: 250px;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-btn{
+    background-color: #000000;
+    color: white;
+    
+}
+
+.custom-btn2{
+    background-color: #feab01;
+    color: black;
+>>>>>>> origin/main
 }

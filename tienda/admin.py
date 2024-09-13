@@ -61,5 +61,11 @@ class ProductoSubCategoriaAdmin(admin.ModelAdmin):
 	list_display = ['id', 'id_producto', 'id_sub_categoria_etiqueta']
 
 
-
+@admin.register(Tallas)
+class TallasAdmin(admin.ModelAdmin):
+    list_display = ['id', 'talla']
+    
+@admin.register(ProductoTallas)
+class ProductoTallasAdmin(admin.ModelAdmin):
+    list_display = ['id', 'id_producto', 'id_talla']
 

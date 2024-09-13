@@ -1,7 +1,7 @@
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from rest_framework import viewsets 
 from .serializers import *
 # Para tomar el from desde el settings
@@ -10,29 +10,23 @@ from django.core.mail import BadHeaderError, EmailMessage
 import re
 from .crypt import *
 
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import make_password
 from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.shortcuts import render, redirect
-from rest_framework import viewsets
-from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
 
 # Importamos todos los modelos de la base de datos
 from .models import *
-
-from django.shortcuts import render
-
-
-
 
 # Create your views here.
 
@@ -88,30 +82,33 @@ class CategoriaViewSet(viewsets.ModelViewSet):
 
 class UsuarioViewSet(viewsets.ModelViewSet):	
 	# authentication_classes = [TokenAuthentication]
-	#permission_classes = [IsAuthenticated]
+	permission_classes = [IsAuthenticated]
 	queryset = Usuario.objects.all()
 	serializer_class = UsuarioSerializer
+
+def registro(request):
+    return render(request,"tienda/login/registro.html")
 
 
 def registrar_usuario(request):
 	if request.method == "POST":
 		nombre = request.POST.get("nombre")
-		correo = request.POST.get("correo")
+		user = request.POST.get("correo")
 		clave1 = request.POST.get("clave1")
 		clave2 = request.POST.get("clave2")
 		switch = request.POST.get("switchTyC")
 		if switch:
-			if not nombre or not correo:
+			if not nombre or not user:
 				messages.warning(request,"Campos vacios, ingrese datos!!")
 				return redirect("inicio")
 			if not re.match(r"^[a-zA-Z\s]+$", nombre):
 				messages.error(request, f"El nombre solo puede llevar valores alfabeticos")
-			if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", correo):
+			if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", user):
 				messages.error(request, f"El correo ingresado no es valido")
 			if clave1 == clave2:
 				q = Usuario(
 				nombre=nombre,
-				email=correo,
+				email=user,
 				password=hash_password(clave1)
 				)
 				q.save()
@@ -143,7 +140,6 @@ def usuarios_crear(request):
 		nombre = request.POST.get("nombre")
 		email = request.POST.get("email")
 		password = request.POST.get("password")
-
 		rol = request.POST.get("rol")
 		if not re.match(r"^[a-zA-Z\s]+$", nombre):
 			messages.error(request, f"El nombre solo puede llevar valores alfabeticos")
@@ -254,28 +250,37 @@ def logout(request):
 
 def inicio(request):
 	logueo = request.session.get("logueo", False)
-
+ 
+	productos = Producto.objects.all()
+	tallas = Tallas.objects.all()
+	proTallas = ProductoTallas.objects.select_related('id_talla', 'id_producto')
+	etiquetas = SubCategoriaEtiqueta.objects.all()
 	categorias = CategoriaEtiqueta.objects.all()
-	count = 0
-	etiquetas = []
-	for categoria in categorias:
-		name = {'nombre': categoria.nombre,
-				'subEtiquetas': []
-				}
-		etiquetas.append(name)
-		subcat = SubCategoriaEtiqueta.objects.filter(id_categoria_etiqueta=categoria.id)
-		for subcategoria in subcat:
-			etiquetas[count]['subEtiquetas'].append(subcategoria)
-		count += 1
+	etq_categorias=[]
+	for c in categorias:
+		etiquetas = SubCategoriaEtiqueta.objects.filter(id_categoria_etiqueta=c)
+		etq_categorias.append(etiquetas)
+	
+	
+     
 	cat = request.GET.get("cat")
+	etq = request.GET.getlist("servicios")
+ 
+	
 	if cat == None:
-		productos = Producto.objects.all()
+    		productos = Producto.objects.all()
 	else:
 		c = CategoriaEtiqueta.objects.get(pk=cat)
 		productos = Producto.objects.filter(categoria=c)
+	
+
+	if etq == None:
+    		productos = Producto.objects.all()
+	
+
 		
 
-	contexto = {"data": productos, "cat": categorias, "etq": etiquetas}
+	contexto = {"data": productos, "cat": categorias, "etq": etq_categorias, "tallas":tallas, "proTallas":proTallas}
 	return render(request, "tienda/inicio/inicio.html", contexto)
 	
 def recuperar_clave(request):
@@ -428,14 +433,48 @@ def categorias_actualizar(request):
 
 @login_requerido
 def productos(request):
-	q = Producto.objects.all()
-	contexto = {"data": q}
-	return render(request, "tienda/productos/productos.html", contexto)
+    q = Producto.objects.all()
+    proTallas = ProductoTallas.objects.select_related('id_talla', 'id_producto')
+    
+    productos = []
+    
+    for i in q:
+        producto = {
+            'nombre': i.nombre,
+            'id': i.id,
+            'etiqueta': [],
+            'precio': i.precio,
+            'inventario': i.inventario,
+            'fecha_creacion': i.fecha_creacion,
+            'categoria': i.categoria,
+            'tallas': []
+        }
+
+        x = ProductoSubCategoria.objects.all()
+        for y in x:
+            if i.id == y.id_producto.id:
+                tag = SubCategoriaEtiqueta.objects.get(pk=y.id_sub_categoria_etiqueta.id)
+                producto["etiqueta"].append(tag)
+
+        for pt in proTallas:
+            if pt.id_producto.id == i.id:
+                producto['tallas'].append(pt.id_talla.talla)
+
+        productos.append(producto)
+
+    contexto = { 
+        "data": productos
+    }
+
+    return render(request, "tienda/productos/productos.html", contexto)
+
 
 
 def productos_form(request):
 	q = CategoriaEtiqueta.objects.all()
-	contexto = {"data": q}
+	e = SubCategoriaEtiqueta.objects.all()
+	t = Tallas.objects.all()
+	contexto = {"data": q, "etiqueta": e, "talla":t}
 	return render(request, "tienda/productos/productos_form.html", contexto)
 
 
@@ -443,30 +482,46 @@ def productos_crear(request):
 	if request.method == "POST":
 		nombre = request.POST.get("nombre")
 		precio = request.POST.get("precio")
-		informacion = request.POST.get("informacion")
 		inventario = request.POST.get("inventario")
 		fecha_creacion = request.POST.get("fecha_creacion")
 		categoria = CategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
-		etiqueta = SubCategoriaEtiqueta.objects.get(pk=request.POST.get("etiqueta"))
-		
+		etiquetas = request.POST.getlist("etiqueta")
+		tallas = request.POST.getlist("talla")
+		foto = request.FILES["foto"]
+
 		if not re.match(r"^\d", precio):
-			messages.error(request, f"El precio solo puede llevar valores numericos")
+    			messages.error(request, f"El precio solo puede llevar valores numericos")
 		if not re.match(r"^\d", inventario):
-			messages.error(request, f"El inventario solo puede llevar valores numericos")
+    			messages.error(request, f"El inventario solo puede llevar valores numericos")
 		try:
 			q = Producto(
 				nombre=nombre,
 				precio=precio,
-				informacion=informacion,
 				inventario=inventario,
 				fecha_creacion=fecha_creacion,
 				categoria=categoria,
-				etiqueta=etiqueta
+				foto=foto
 			)
 			q.save()
+
+			for etiqueta_id in etiquetas:
+				etiqueta = SubCategoriaEtiqueta.objects.get(pk=etiqueta_id)
+				
+				ProductoSubCategoria.objects.create(
+					id_producto = q,
+					id_sub_categoria_etiqueta = etiqueta
+				)
+
+			for talla_id in tallas:
+				talla = Tallas.objects.get(pk=talla_id)
+				ProductoTallas.objects.create(
+					id_producto = q,
+					id_talla = talla
+				)
+   
 			messages.success(request, "Guardado correctamente!!")
 		except Exception as e:
-			messages.error(request, f"Error: No se enviaron datos...")
+			messages.error(request, f"Error: No se enviaron datos...{e}")
 		return redirect("productos_listar")
 
 	else:
@@ -493,36 +548,60 @@ def productos_formulario_editar(request, id):
 	return render(request, "tienda/productos/productos_formulario_editar.html", contexto)
 
 def productos_actualizar(request):
-	if request.method == "POST":
-		id = request.POST.get("id")
-		nombre = request.POST.get("nombre")
-		precio = request.POST.get("precio")
-		informacion = request.POST.get("informacion")
-		inventario = request.POST.get("inventario")
-		fecha_creacion = request.POST.get("fecha_creacion")
-		categoria = CategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
-		etiqueta = SubCategoriaEtiqueta.objects.get(pk=request.POST.get("etiqueta"))
-		if not re.match(r"^\d", precio):
-			messages.error(request, f"El precio solo puede llevar valores numericos")
-		if not re.match(r"^\d", inventario):
-			messages.error(request, f"El inventario solo puede llevar valores numericos")
-		try:
-			q = Producto.objects.get(pk=id)
-			q.nombre = nombre
-			q.precio = precio
-			q.informacion=informacion
-			q.inventario = inventario
-			q.fecha_creacion = fecha_creacion
-			q.categoria = categoria
-			q.etiqueta = etiqueta
-			q.save()
-			messages.success(request, "Producto actualizado correctamente!!")
-		except Exception as e:
-			messages.error(request, f"Error {e}")
-	else:
-		messages.warning(request, "Error: No se enviaron datos...")
+    if request.method == "POST":
+        id_producto = request.POST.get("id")
+        nombre = request.POST.get("nombre")
+        precio = request.POST.get("precio")
+        inventario = request.POST.get("inventario")
+        fecha_creacion = request.POST.get("fecha_creacion")
+        categoria_id = request.POST.get("categoria")
+        etiquetas_ids = request.POST.getlist("etiqueta")
 
-	return redirect("productos_listar")
+        # Validación básica de los campos de precio e inventario
+        if not precio.isdigit():
+            messages.error(request, "El precio solo puede llevar valores numéricos")
+            return redirect("productos_listar")
+
+        if not inventario.isdigit():
+            messages.error(request, "El inventario solo puede llevar valores numéricos")
+            return redirect("productos_listar")
+
+        try:
+            # Obtener el producto a actualizar
+            producto = Producto.objects.get(pk=id_producto)
+
+            # Actualizar los campos del producto
+            producto.nombre = nombre
+            producto.precio = precio
+            producto.inventario = inventario
+            producto.fecha_creacion = fecha_creacion
+            producto.categoria_id = categoria_id
+
+            # Guardar el producto actualizado
+            producto.save()
+
+            # Limpiar y actualizar las etiquetas asociadas al producto
+            ProductoSubCategoria.objects.filter(id_producto=producto).delete()  # Limpiar etiquetas existentes
+
+            for etiqueta_id in etiquetas_ids:
+                etiqueta = SubCategoriaEtiqueta.objects.get(pk=etiqueta_id)
+                ProductoSubCategoria.objects.create(
+					id_producto = producto,
+					id_sub_categoria_etiqueta = etiqueta
+				)
+
+            messages.success(request, "Producto actualizado correctamente")
+        except Producto.DoesNotExist:
+            messages.error(request, "El producto especificado no existe")
+        except SubCategoriaEtiqueta.DoesNotExist:
+            messages.error(request, "Una de las etiquetas especificadas no existe")
+        except Exception as e:
+            messages.error(request, f"Error al actualizar el producto: {e}")
+
+    else:
+        messages.warning(request, "Error: No se enviaron datos")
+
+    return redirect("productos_listar")
 
 
 def ver_perfil(request):
@@ -759,26 +838,10 @@ def eliminar_item_carrito(request, id_producto):
 
 		request.session["items"] = len(carrito)
 		request.session["carrito"] = carrito
-		return redirect("ver_carrito")
+		return redirect("carrito_ver")
 	except:
 		return HttpResponse("Error")
-	
-def eliminar_item_carrito_ver(request, id_producto):
-	try:
-		carrito = request.session.get("carrito", False)
-		if carrito != False:
-			for i, item in enumerate(carrito):
-				if item["id"] == id_producto:
-					carrito.pop(i)
-					break
-			else:
-				messages.warning(request, "No se encontró el ítem en el carrito.")
 
-		request.session["items"] = len(carrito)
-		request.session["carrito"] = carrito
-		return redirect("visualizar_carrito")
-	except:
-		return HttpResponse("Error")
 
 def actualizar_totales_carrito(request, id_producto):
 	carrito = request.session.get("carrito", False)
@@ -979,6 +1042,80 @@ def term_y_cond(request):
     return render(request, "tienda/term_y_cond/term_y_cond.html")
 
 
+
+def devoluciones(request):
+    q = Devoluciones.objects.all()
+    contexto = {"data": q}
+    return render(request, "tienda/devoluciones/devoluciones.html", contexto)
+
+def devoluciones_form(request):
+	q = CategoriaEtiqueta.objects.all()
+	contexto = {"data": q}
+	return render(request, "tienda/devoluciones/devoluciones_form.html", contexto)
+
+def devoluciones_crear(request):
+	if request.method == "POST":
+		nombre = request.POST.get("nombre")
+		email = request.POST.get("email")
+		telefono = request.POST.get("telefono")
+		descripcion = request.POST.get("descripcion")
+		try:
+			q = Devoluciones(
+				nombre=nombre,
+				email=email,
+				telefono=telefono,
+				descripcion= descripcion,
+			)
+			q.save()
+			messages.success(request, "Guardado correctamente!!")
+		except Exception as e:
+			messages.error(request, f"Error: No se enviaron datos...")
+		return redirect("devoluciones")
+
+	else:
+		messages.warning(request, "Error: No se enviaron datos...")
+		return redirect("devoluciones")
+
+def devoluciones_formulario_editar(request, id):
+	q = Devoluciones.objects.get(pk=id)
+	contexto = {"data": q}
+	return render(request, "tienda/devoluciones/devoluciones_formulario_editar.html", contexto)
+
+def devoluciones_actualizar(request):
+	if request.method == "POST":
+		id = request.POST.get("id")
+		nombre = request.POST.get("nombre")
+		email = request.POST.get("email")
+		telefono = request.POST.get("telefono")
+		descripcion = request.POST.get("descripcion")
+		
+		try:
+			q = Devoluciones.objects.get(pk=id)
+			q.nombre = nombre
+			q.email = email
+			q.telefono = telefono
+			q.descripcion = descripcion
+			
+			q.save()
+			messages.success(request, "Devolucion actualizada correctamente!!")
+		except Exception as e:
+			messages.error(request, f"Error {e}")
+	else:
+		messages.warning(request, "Error: No se enviaron datos...")
+
+	return redirect("devoluciones")
+
+def devoluciones_eliminar(request, id):
+	try:
+		q = Devoluciones.objects.get(pk=id)
+		q.delete()
+		messages.success(request, "Devolucion eliminada correctamente!!")
+	except Exception as e:
+		messages.error(request, f"Error: {e}")
+
+	return redirect("devoluciones")
+
+
 class RegistrarUsuario(APIView):
     def post(self, request):
         print(request.data)
@@ -1035,3 +1172,71 @@ class CustomAuthToken(ObtainAuthToken):
 				'foto': usuario.foto.url
 			}
 		})
+  
+def tallas_listar(request):
+    t = Tallas.objects.all()
+    contexto = {"talla":t}
+    return render (request, "tienda/tallas/tallas.html", contexto)
+
+def tallas_form(request):
+	return render(request, "tienda/tallas/tallas_form.html")
+
+def tallas_crear(request):
+    if request.method == "POST":
+        talla = request.POST.get("talla")
+        if not re.match(r'^[a-zA-Z0-9]+$', talla):
+            messages.error(request, f"La talla solo puede llevar valores numericos o letras")
+        
+        try:
+            q = Tallas(
+				talla = talla
+			)
+            q.save()
+            messages.success(request, "Guardado correctamente!!")
+        except Exception as e:
+            messages.error(request, f"Error: {e}")
+        return redirect("tallas_listar")
+
+def tallas_editar(request, id):
+	q = Tallas.objects.get(pk=id)
+	contexto = {"talla": q}
+	return render(request, "tienda/tallas/tallas_editar.html", contexto)
+	         
+
+def tallas_actualizar(request):
+	if request.method == "POST":
+		id = request.POST.get('id')
+		talla = request.POST.get("talla")
+		print(talla)
+		if not re.match(r'^[a-zA-Z0-9]+$', talla):
+				messages.error(request, f"La talla solo puede llevar valores numericos o letras")
+		try:
+			q = Tallas.objects.get(pk=id)
+			q.talla = talla
+			q.save()
+			messages.success(request, "Guardado correctamente!!")
+		except Exception as e:
+			messages.error(request, f"Error: {e}")
+		return redirect("tallas_listar")
+			
+def tallas_eliminar(request, id):
+	try:
+		q = Tallas.objects.get(pk=id)
+		q.delete()
+		messages.success(request, "Talla eliminada correctamente!!")
+	except Exception as e:
+		messages.error(request, f"Error: {e}")
+
+	return redirect("tallas_listar")
+  
+def venta_listar(request):
+    v = Venta.objects.all(),
+    d = DetalleVenta.objects.all(),
+    contexto = {"venta": v,"detalle": d}
+    return render(request, "tienda/ventas/ventas.html", contexto)
+
+def venta_form(request):
+    	return render(request, "tienda/ventas/ventas_form.html")
+ 
+
+

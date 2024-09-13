@@ -12,24 +12,38 @@
 
 <div id="main">
     <div id="filtro">
-        {% csrf_token %}
+        <form action="{% url 'inicio' %}" method="post">
 
-        <div id="botones">
-            <a href="{% url 'inicio' %}" type="button" class="btn custom-btn">Ver todos</a>
-            <a href="{% url 'inicio' %}" type="button" class="btn custom-btn">Filtrar</a>
+            {% csrf_token %}
 
-        </div>
+            <div id="botones">
 
-        {% for c in etq %}
-        <a id="categorias" href="{% url 'inicio' %}?cat={{ c.id }}">{{ c.nombre }}</a>
-        <div>
-            {% for e in c.subEtiquetas %}
-            <input type="checkbox" id="etiquetas" href="{% url 'inicio' %}?cat={{ c.id }}">{{ e.nombre }}</input><br>
-            {% endfor %}
-        </div>
-        {% endfor %}
+                <a href="{% url 'inicio' %}" type="button" class="btn custom-btn">Ver todos</a>
+                <a href="{% url 'inicio'  %}" type="button" class="btn custom-btn">Filtrar</a>
 
-        
+            </div>
+            <div>
+
+                <div id="categorias">
+
+                    {% for c in cat %}
+                        <a class="btn custom-btn2" id="categorias" href="{% url 'inicio' %}?cat={{ c.id }}">{{ c.nombre }}</a>
+                        {% for e in etq %}
+                            {% for x in e %}
+                                {% if x.id_categoria_etiqueta.id == c.id %}
+                                    <div id="etiquetas" class="checkbox-container">
+                                        <input name="{{ x.id }}" id="{{ x.id }}" type="checkbox" href="{% url 'inicio' %}?etq={{ x.id }}"></input>
+                                        <label class="checkbox-label" for="{{ x.id }}" > {{ x.nombre }} </label>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+
+                    {% endfor %}
+
+                </div>
+            </div>
+        </form>
     </div>
 
 
@@ -47,12 +61,34 @@
             {% endif %}
 
             <div class="card m-2 p-2 align-items-center" style="float:left;width: 18rem; margin-top:0%;">
+<<<<<<< HEAD
                 <img src="{{ p.foto.url }}" class="card-img-top" alt="{{ p.nombre }}" style="width:70%">
                 <div class="card-body">
                     <h5 class="card-title">{{ p.nombre }}</h5>
                     <p class="card-text">
                         ${{ p.precio|floatformat:0|intcomma }}
                     </p>
+=======
+                <div class="Productoimg">
+                    <img src="{{ p.foto.url }}"  alt="{{ p.nombre }}" style="width:70%">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ p.nombre }}</h5>                    
+                    <p class="card-text">
+                        ${{ p.precio|floatformat:0|intcomma }}
+                    </p>                    
+                </div>
+                <label for="talla">Tallas:</label><br>
+                <div class="tallas">
+                    
+                    {% for pt in proTallas %}
+                        {% if pt.id_producto.id == p.id %}
+                            <input type="radio" id="talla_{{ pt.id_talla.id }}" name="talla_{{ p.id }}" value="{{ pt.id_talla.id }}">
+                            <label for="talla_{{ pt.id_talla.id }}">{{ pt.id_talla.talla }}</label>
+                        {% endif %}
+                    {% endfor %}
+
+>>>>>>> origin/main
                 </div>
                 {% if p.inventario > 0 %}
                 <form>
@@ -66,7 +102,10 @@
 
                 </form>
                 {% endif %}
+<<<<<<< HEAD
                 
+=======
+>>>>>>> origin/main
                 <div class="card-footer">   
                     <small class="text-body-secondary">{{ p.categoria }}</small>
 

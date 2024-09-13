@@ -27,19 +27,24 @@
 
         <div class="container-fluid">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
-                            data-bs-toggle="dropdown">Usuario</a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="{% url 'usuarios_listar' %}" class="dropdown-item">Ver usuarios</a>
-                            </li>
 
-                            <li>
-                                <a class="dropdown-item" href="#">Editar perfil</a>
-                            </li>
-                        </ul>
-                    </li>
+
+                    {% if request.session.logueo.rol == 1 %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
+                                data-bs-toggle="dropdown">Usuario</a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="{% url 'usuarios_listar' %}" class="dropdown-item">Ver usuarios</a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item" href="#">Editar perfil</a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% endif %}
+
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
@@ -64,7 +69,12 @@
                             data-bs-toggle="dropdown">Devoluciones</a>
                         <ul class="dropdown-menu">
                             <li>
+<<<<<<< HEAD
                                 <a class="dropdown-item" href="{% url 'devoluciones' %}">Devoluciones</a>
+=======
+                                <a class="dropdown-item" href="{% url 'devoluciones' %}">Recopilar Información personal
+                                    del cliente</a>
+>>>>>>> origin/main
                             </li>
                             <li>
                                 <a class="dropdown-item" href="#">Guardar información acerca de los gustos del
@@ -78,6 +88,7 @@
                             </li>
                         </ul>
                     </li>
+<<<<<<< HEAD
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
@@ -91,6 +102,23 @@
                             <li><a class="dropdown-item" href="{% url 'etiquetas_listar' %}">Etiquetas</a></li>
                         </ul>
                     </li>
+=======
+                    {% if request.session.logueo.rol == 1 %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
+                                data-bs-toggle="dropdown">Productos</a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'productos_listar' %}">Ver productos</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#">Queja</a></li>
+                                <li><a class="dropdown-item" href="{% url 'categorias_listar' %}">Categorias</a></li>
+                                <li><a class="dropdown-item" href="{% url 'etiquetas_listar' %}">Etiquetas</a></li>
+                                <li><a class="dropdown-item" href="{% url 'tallas_listar' %}">Tallas</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+>>>>>>> origin/main
                 </ul>
                 {% if not request.session.logueo %}
                 
@@ -101,9 +129,15 @@
                     </button>
                     
                     
+<<<<<<< HEAD
                     <button style="background-color: #feab01" class="btn"  data-bs-toggle="modal" data-bs-target="#registrar">
                         REGISTARSE
                     </button>
+=======
+                    <a style="background-color: #feab01" class="btn"  href="{% url 'registro' %}">
+                        REGISTARSE
+                    </a>
+>>>>>>> origin/main
                 </div>
                 {% endif %}
                 
@@ -125,7 +159,11 @@
                         </ul>
                     </li>
                     <li class="nav-item">
+<<<<<<< HEAD
                         <a class="nav-link position-relative" href="javascript:ver_carrito(`{% url 'ver_carrito' %}`);">
+=======
+                        <a class="nav-link position-relative" href="javascript:ver_carrito(`{% url 'carrito_ver' %}`);">
+>>>>>>> origin/main
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  class="bi bi-cart-check" viewBox="0 0 16 16">
                                 <path d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z"/>
@@ -134,7 +172,10 @@
                             <span class="position-absolute top-20 start-100 translate-middle badge rounded-pill bg-danger" id="items_carrito">
                             {{ request.session.items|default:"0" }}
                             </span>
+<<<<<<< HEAD
                             
+=======
+>>>>>>> origin/main
                         </a>
                     </li>
                 </ul>
@@ -184,6 +225,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <div class="modal fade" id="registrar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content" id="formRegistrar">
@@ -234,6 +276,8 @@
         </div>
 
     </div>
+=======
+>>>>>>> origin/main
    
      
 
@@ -248,10 +292,43 @@
 
 
     {% block contenedor %}
+<<<<<<< HEAD
     {% endblock %}
 
 
     <footer >
+=======
+        ...
+    {% endblock %}
+
+
+    <div style="background-color: #000000" class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasRightLabel">
+                <div class="spinner-border text-primary d-block" role="status" id="loader">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </h5>
+
+            <h1 style="color:white;"> Carrito</h1>
+
+            <button  type="button" class="btn-close btn btn-warning" data-bs-dismiss="offcanvas" aria-label="Close" > </button>
+
+        </div>
+
+        <div class="offcanvas-body" id="respuesta_carrito"></div>
+    </div>
+
+    <script src="{% static 'tienda/js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'tienda/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'tienda/js/libreria.js' %}"></script>
+
+
+    <br>
+
+    <footer>
+>>>>>>> origin/main
         <div class="container">
             <div class="rowss">
                 <img src="{% static 'tienda/img/icono.png' %}" alt="Avatar Logo" style="width: 100px" class="rounded-pill" />
@@ -282,6 +359,7 @@
         </div>
     </footer>
 
+<<<<<<< HEAD
     <div style="background-color: #000000" class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
 
         <div class="offcanvas-header">
@@ -310,5 +388,7 @@
     <br>
 
 
+=======
+>>>>>>> origin/main
 </body>
 </html>

@@ -13,8 +13,6 @@ router.register(r'subcategoria-etiqueta', views.SubCategoriaEtiquetaViewSet)
 router.register(r'producto-subcategoria', views.ProductoSubCategoriaViewSet)
 router.register(r'venta', views.VentaViewSet)
 router.register(r'detalle-venta', views.DetalleVentaViewSet)
-router.register(r'registrar-usuario', views.DetalleVentaViewSet)
-
 
 urlpatterns = [
 	path('index/', views.index, name="index"),
@@ -26,10 +24,10 @@ urlpatterns = [
 	path('api/1.0/api-auth/', include('rest_framework.urls')),
     path('api/1.0/registrar_usuario/', views.RegistrarUsuario.as_view(), name='registrar_usuario'),
 
-
 	# Autenticación de usuarios del sistema
 	path('login/', views.login, name="login"),
 	path('logout/', views.logout, name="logout"),
+	path("registro/", views.registro, name="registro"),
 	path('registrar_usuario/', views.registrar_usuario, name="registrar_usuario"),
     path("recuperar_clave/", views.recuperar_clave, name="recuperar_clave"),
 	path("verificar_recuperar/", views.verificar_recuperar, name="verificar_recuperar"),
@@ -97,4 +95,25 @@ urlpatterns = [
 
 	#Terminos y condiciones
  	path("term_y_cond/", views.term_y_cond, name="term_y_cond"),
+  
+  
+   	#tallas
+	path("tallas_listar/", views.tallas_listar, name="tallas_listar"),
+	path("talla_form/", views.tallas_form, name="tallas_form"),
+	path("tallas_crear/", views.tallas_crear, name="tallas_crear"),
+	path("tallas_actualizar/", views.tallas_actualizar, name="tallas_actualizar"),
+	path("tallas_eliminar/<int:id>", views.tallas_eliminar, name="tallas_eliminar"),
+ 	path("tallas_editar/<int:id>", views.tallas_editar, name="tallas_editar"),
+  
+  
+  	#Ventas
+	path("venta_listar/", views.venta_listar, name="venta_listar"),
+  
+	# CRUD de Devoluciones
+	path("devoluciones/", views.devoluciones, name="devoluciones"),
+	path("devoluciones_form/", views.devoluciones_form, name="devoluciones_form"),
+	path("devoluciones_crear/", views.devoluciones_crear, name="devoluciones_crear"),
+	path("devoluciones_formulario_editar/<int:id>", views.devoluciones_formulario_editar, name="devoluciones_formulario_editar"),
+	path("devoluciones_actualizar/", views.devoluciones_actualizar, name="devoluciones_actualizar"),
+	path("devoluciones_eliminar/<int:id>", views.devoluciones_eliminar, name="devoluciones_eliminar"),
 ]

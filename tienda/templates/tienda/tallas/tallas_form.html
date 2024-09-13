@@ -1,0 +1,17 @@
+{% extends 'tienda/inicio/base.html' %}
+{% load static %}
+
+{% block titulo %}Crear Tallas{% endblock %}
+
+{% block contenedor %}
+
+    <h1 class="titul">Crear Talla</h1>
+    <div class="formularioTall">
+        <form action="{% url 'tallas_crear' %}" method="post">
+            {% csrf_token %}
+            <label class="form-control">Talla</label>
+            <input class="form-control" type="text" name="talla" /><br>            
+            <button type="warning" class="btn btn-success">Guardar</button>
+        </form>
+    </div>
+{% endblock %}

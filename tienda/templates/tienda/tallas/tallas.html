@@ -1,0 +1,42 @@
+{% extends 'tienda/inicio/base.html' %}
+{% load static %}
+
+{% block titulo %}Listar tallas{% endblock %}
+
+{% block contenedor %}
+
+<h1>TALLAS</h1>
+<a class="btn btn-success" href="{% url 'tallas_form' %}">Agregar</a>
+<br>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Talla</th>
+            <th>Operaciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in talla %}
+            <tr>
+                <td>
+                    {{ t.talla }}
+                </td>    
+                <td>
+                    <a class="btn btn-danger" href="javascript:eliminar('{% url 'tallas_eliminar' t.id %}')">Eliminar</a>
+                    <a class="btn btn-info" href="{% url 'tallas_editar' t.id %}">Editar</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+    </ul>
+</nav>
+{% endblock %}

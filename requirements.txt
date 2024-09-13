@@ -1,8 +1,15 @@
 asgiref==3.7.2
+<<<<<<< HEAD
+=======
+# backports.zoneinfo==0.2.1
+>>>>>>> origin/main
 Django==4.2.6
 Pillow==10.1.0
 sqlparse==0.4.4
 typing-extensions==4.8.0
+<<<<<<< HEAD
 django-filter==23.5 
 djangorestframework==3.14.0
 Markdown==3.5.2 
+=======
+>>>>>>> origin/main

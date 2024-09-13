@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 body {
     display: flex;
     flex-direction: column;
@@ -14,12 +15,27 @@ footer {
 }
 
 .rowss {
+=======
+footer {
+    width: 100%;
+    background-color: #feab01;
+    flex-direction: row;
+    justify-content: space-around;
+    
+}
+
+.rowss{
+>>>>>>> origin/main
     display: flex;
     align-items: center;
     justify-content: space-around;
 }
 
+<<<<<<< HEAD
 .formInicio {
+=======
+.formInicio{
+>>>>>>> origin/main
     height: 400px;
     width: 350px;
     background-color: #feab01;
@@ -29,7 +45,11 @@ footer {
     align-items: center;
 }
 
+<<<<<<< HEAD
 #formRegistrar {
+=======
+#formRegistrar{
+>>>>>>> origin/main
     height: 600px;
     width: 350px;
     background-color: #feab01;
@@ -39,6 +59,7 @@ footer {
     align-items: center;
 }
 
+<<<<<<< HEAD
 .contenedor-carrito {
     display: flex;
 
@@ -56,3 +77,22 @@ footer {
     padding: 5%;
     
 }
+=======
+#categorias{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3%;
+}
+
+.formularioProd{
+    margin: 40px;
+}
+
+.termYcond{
+    display: flex;
+    flex-direction: column;
+    padding: 3%;
+    
+}
+>>>>>>> origin/main

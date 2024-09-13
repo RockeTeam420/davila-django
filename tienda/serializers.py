@@ -17,7 +17,7 @@ class ProductoSerializer(serializers.HyperlinkedModelSerializer):
 class UsuarioSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Usuario
-        fields = ['id', 'nombre', 'email','password', 'ROLES', 'rol', 'foto']
+        fields = ['id', 'nombre', 'correo','clave', 'ROLES', 'rol', 'foto']
 
 class CategoriaEtiquetaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
