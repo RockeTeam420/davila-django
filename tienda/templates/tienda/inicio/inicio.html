@@ -5,104 +5,128 @@
 
 {% block estilos %}
 <link rel="stylesheet" href="{% static 'tienda/css/main.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}
 
 
 {% block contenedor %}
 
 <div id="main">
-    <div id="filtro">
-        <form action="{% url 'inicio' %}" method="post">
+    <div class='carrusel'>
 
-            {% csrf_token %}
-
-            <div id="botones">
-
-                <a href="{% url 'inicio' %}" type="button" class="btn custom-btn">Ver todos</a>
-                <a href="{% url 'inicio'  %}" type="button" class="btn custom-btn">Filtrar</a>
-
+        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for image in carousel_items %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ image.imagen.url }}" class="d-block w-100" alt="{{ image.alt_text }}">
+                    </div>
+                {% endfor %}
             </div>
-            <div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+    <div class='contenedor-main'>
+        <div id="filtro">
+            <form action="{% url 'inicio' %}" method="post">
 
-                <div id="categorias">
+                {% csrf_token %}
 
-                    {% for c in cat %}
-                        <a class="btn custom-btn2" id="categorias" href="{% url 'inicio' %}?cat={{ c.id }}">{{ c.nombre }}</a>
-                        {% for e in etq %}
-                            {% for x in e %}
-                                {% if x.id_categoria_etiqueta.id == c.id %}
-                                    <div id="etiquetas" class="checkbox-container">
-                                        <input name="{{ x.id }}" id="{{ x.id }}" type="checkbox" href="{% url 'inicio' %}?etq={{ x.id }}"></input>
-                                        <label class="checkbox-label" for="{{ x.id }}" > {{ x.nombre }} </label>
-                                    </div>
-                                {% endif %}
+                <div id="botones">
+
+                    <a href="{% url 'inicio' %}" type="button" class="btn custom-btn">Ver todos</a>
+                    <a href="{% url 'inicio'  %}" type="button" class="btn custom-btn">Filtrar</a>
+
+                </div>
+                <div>
+
+                    <div id="categorias">
+
+                        {% for c in cat %}
+                            <a class="btn custom-btn2" id="categorias" href="{% url 'inicio' %}?cat={{ c.id }}">{{ c.nombre }}</a>
+                            {% for e in etq %}
+                                {% for x in e %}
+                                    {% if x.id_categoria_etiqueta.id == c.id %}
+                                        <div id="etiquetas" class="checkbox-container">
+                                            <input name="{{ x.id }}" id="{{ x.id }}" type="checkbox" href="{% url 'inicio' %}?etq={{ x.id }}"></input>
+                                            <label class="checkbox-label" for="{{ x.id }}" > {{ x.nombre }} </label>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
                             {% endfor %}
+
                         {% endfor %}
 
-                    {% endfor %}
-
+                    </div>
                 </div>
-            </div>
-        </form>
-    </div>
-
-
-
-    <div id="productos">
-
-        {% for p in data %}
-        {% if forloop.first %}
-        <div class="row" style="clear:left;">
-            {% endif %}
-
-            {% if forloop.counter0|divisibleby:4 %}
+            </form>
         </div>
-        <div class="row" style="clear:left;">
-            {% endif %}
 
-            <div class="card m-2 p-2 align-items-center" style="float:left;width: 18rem; margin-top:0%;">
-                <div class="Productoimg">
-                    <img src="{{ p.foto.url }}"  alt="{{ p.nombre }}" style="width:70%">
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">{{ p.nombre }}</h5>                    
-                    <p class="card-text">
-                        ${{ p.precio|floatformat:0|intcomma }}
-                    </p>                    
-                </div>
-                <div class="tallas">
-                    <input type="radio" id="talla-s" name="talla" value="S">
-                    <label for="talla-s">S</label>                
-                    <input type="radio" id="talla-m" name="talla" value="M">
-                    <label for="talla-m">M</label>                
-                    <input type="radio" id="talla-l" name="talla" value="L">
-                    <label for="talla-l">L</label>                
-                    <input type="radio" id="talla-xl" name="talla" value="XL">
-                    <label for="talla-xl">XL</label>
-                </div>
-                {% if p.inventario > 0 %}
-                <form>
-                    <input type="hidden" name="id" id="id_{{ p.id }}" value="{{ p.id }}" />
-                    <input type="number" name="cantidad" id="cantidad_{{ p.id }}" min="1" max="{{ p.inventario }}"
-                        value="1" size="3" />
 
-                    <button type="button" onclick="add_carrito(`{% url 'carrito_add' %}`, {{ p.id }});"
-                        class="btn custom-btn">Add Carrito</button>
-                 
 
-                </form>
+        <div id="productos">
+
+            {% for p in data %}
+            {% if forloop.first %}
+            <div class="row" style="clear:left;">
                 {% endif %}
-                <div class="card-footer">   
-                    <small class="text-body-secondary">{{ p.categoria }}</small>
 
-                    {% if p.inventario >= 1 and p.inventario <= 3 %} <br><small class="text-danger">Quedan sólo {{ p.inventario }} unidades...</small>
-                        {% elif p.inventario == 0 %}
-                        <br><small class="text-danger">Producto agotado!!</small>
-                        {% endif %}
-                </div>
+                {% if forloop.counter0|divisibleby:4 %}
             </div>
+            <div class="row" style="clear:left;">
+                {% endif %}
 
-            {% if forloop.last %}
+                <div class="card m-2 p-2 align-items-center" style="float:left;width: 18rem; margin-top:0%;">
+                    <div class="Productoimg">
+                        <img src="{{ p.foto.url }}"  alt="{{ p.nombre }}" style="width:70%">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ p.nombre }}</h5>                    
+                        <p class="card-text">
+                            ${{ p.precio|floatformat:0|intcomma }}
+                        </p>                    
+                    </div>
+                    <div class="tallas">
+                        <input type="radio" id="talla-s" name="talla" value="S">
+                        <label for="talla-s">S</label>                
+                        <input type="radio" id="talla-m" name="talla" value="M">
+                        <label for="talla-m">M</label>                
+                        <input type="radio" id="talla-l" name="talla" value="L">
+                        <label for="talla-l">L</label>                
+                        <input type="radio" id="talla-xl" name="talla" value="XL">
+                        <label for="talla-xl">XL</label>
+                    </div>
+                    {% if p.inventario > 0 %}
+                    <form>
+                        <input type="hidden" name="id" id="id_{{ p.id }}" value="{{ p.id }}" />
+                        <input type="number" name="cantidad" id="cantidad_{{ p.id }}" min="1" max="{{ p.inventario }}"
+                            value="1" size="3" />
+
+                        <button type="button" onclick="add_carrito(`{% url 'carrito_add' %}`, {{ p.id }});"
+                            class="btn custom-btn">Add Carrito</button>
+                    
+
+                    </form>
+                    {% endif %}
+                    <div class="card-footer">   
+                        <small class="text-body-secondary">{{ p.categoria }}</small>
+
+                        {% if p.inventario >= 1 and p.inventario <= 3 %} <br><small class="text-danger">Quedan sólo {{ p.inventario }} unidades...</small>
+                            {% elif p.inventario == 0 %}
+                            <br><small class="text-danger">Producto agotado!!</small>
+                            {% endif %}
+                    </div>
+                </div>
+
+                {% if forloop.last %}
+            </div>
         </div>
         {% endif %}
 

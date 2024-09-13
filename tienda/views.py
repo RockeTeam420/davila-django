@@ -251,7 +251,7 @@ def logout(request):
 def inicio(request):
 	logueo = request.session.get("logueo", False)
 	
- 
+	carousel_items = CarouselItem.objects.all()
 	etiquetas = SubCategoriaEtiqueta.objects.all()
 	productos = Producto.objects.all()
 	categorias = CategoriaEtiqueta.objects.all()
@@ -267,7 +267,7 @@ def inicio(request):
  
 	
 	if cat == None:
-    		productos = Producto.objects.all()
+		productos = Producto.objects.all()
 	else:
 		c = CategoriaEtiqueta.objects.get(pk=cat)
 		productos = Producto.objects.filter(categoria=c)
@@ -275,12 +275,12 @@ def inicio(request):
 	print(etq)
 
 	if etq == None:
-    		productos = Producto.objects.all()
+		productos = Producto.objects.all()
 	
 
 		
 
-	contexto = {"data": productos, "cat": categorias, "etq": etq_categorias}
+	contexto = {"data": productos, "cat": categorias, "etq": etq_categorias, 'carousel_items': carousel_items}
 	return render(request, "tienda/inicio/inicio.html", contexto)
 	
 def recuperar_clave(request):
@@ -475,12 +475,12 @@ def productos_crear(request):
 		fecha_creacion = request.POST.get("fecha_creacion")
 		categoria = CategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
 		etiquetas = request.POST.getlist("etiqueta")
-		foto = request.FILES["imagen"]
+		# foto = request.FILES["imagen"]
 		if not re.match(r"^\d", precio):
 			messages.error(request, f"El precio solo puede llevar valores numericos")
 		if not re.match(r"^\d", inventario):
 			messages.error(request, f"El inventario solo puede llevar valores numericos")
-		print(foto)
+		# print(foto)
 		try:
 			q = Producto(
 				nombre=nombre,
@@ -1103,4 +1103,9 @@ def venta_form(request):
     	return render(request, "tienda/ventas/ventas_form.html")
  
 
-
+def carusel(request):
+    carousel_items = CarouselItem.objects.all()
+    context = {
+        'carousel_items': carousel_items,
+    }
+    return render(request, 'tienda/inicio/inicio.html', context)

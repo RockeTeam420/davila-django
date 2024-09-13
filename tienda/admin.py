@@ -64,3 +64,6 @@ class ProductoSubCategoriaAdmin(admin.ModelAdmin):
 class TallasAdmin(admin.ModelAdmin):
     list_display = ['id', 'talla']
 
+@admin.register(CarouselItem)
+class CarouselItem(admin.ModelAdmin):
+    list_display = ['titulo','descripcion','imagen']

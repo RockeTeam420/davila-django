@@ -136,3 +136,20 @@ class Devoluciones(models.Model):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+        
+        
+class CarouselItem(models.Model):
+    titulo = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True, null=True)
+    imagen = models.ImageField(upload_to='carousel/')
+    
+
+    def __str__(self):
+        return self.titulo       
+        
+        
+        
+        
+        
+        
+                
