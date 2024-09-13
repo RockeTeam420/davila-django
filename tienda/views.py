@@ -254,13 +254,16 @@ def inicio(request):
 	carousel_items = CarouselItem.objects.all()
 	etiquetas = SubCategoriaEtiqueta.objects.all()
 	productos = Producto.objects.all()
+	tallas = Tallas.objects.all()
+	proTallas = ProductoTallas.objects.select_related('id_talla', 'id_producto')
+	etiquetas = SubCategoriaEtiqueta.objects.all()
 	categorias = CategoriaEtiqueta.objects.all()
 	etq_categorias=[]
 	for c in categorias:
 		etiquetas = SubCategoriaEtiqueta.objects.filter(id_categoria_etiqueta=c)
 		etq_categorias.append(etiquetas)
 	
-		
+	
      
 	cat = request.GET.get("cat")
 	etq = request.GET.getlist("servicios")
@@ -272,7 +275,6 @@ def inicio(request):
 		c = CategoriaEtiqueta.objects.get(pk=cat)
 		productos = Producto.objects.filter(categoria=c)
 	
-	print(etq)
 
 	if etq == None:
 		productos = Producto.objects.all()
@@ -280,7 +282,8 @@ def inicio(request):
 
 		
 
-	contexto = {"data": productos, "cat": categorias, "etq": etq_categorias, 'carousel_items': carousel_items}
+	
+	contexto = {"data": productos, "cat": categorias, "etq": etq_categorias, "tallas":tallas, "proTallas":proTallas,'carousel_items': carousel_items}
 	return render(request, "tienda/inicio/inicio.html", contexto)
 	
 def recuperar_clave(request):
@@ -433,30 +436,41 @@ def categorias_actualizar(request):
 
 @login_requerido
 def productos(request):
-	q = Producto.objects.all()
-	productos=[]
-	#print(x)
-	for i in q:
-		x = ProductoSubCategoria.objects.all()
-		#print(i.id)
-		producto = {
-			'nombre': i.nombre,
-			'id': i.id,
-			'etiqueta': [],
-			'precio': i.precio,
-			'inventario': i.inventario,
-			'fecha_creacion': i.fecha_creacion,
-			'categoria': i.categoria,
-		}
-		for y in x:
-			if i.id == y.id_producto.id:
-				tag = SubCategoriaEtiqueta.objects.get(pk=y.id_sub_categoria_etiqueta.id)
-				producto["etiqueta"].append(tag)
-		#print(producto)
-		productos.append(producto)
-	print(productos)
-	contexto = { "data": productos }
-	return render(request, "tienda/productos/productos.html", contexto)
+    q = Producto.objects.all()
+    proTallas = ProductoTallas.objects.select_related('id_talla', 'id_producto')
+    
+    productos = []
+    
+    for i in q:
+        producto = {
+            'nombre': i.nombre,
+            'id': i.id,
+            'etiqueta': [],
+            'precio': i.precio,
+            'inventario': i.inventario,
+            'fecha_creacion': i.fecha_creacion,
+            'categoria': i.categoria,
+            'tallas': []
+        }
+
+        x = ProductoSubCategoria.objects.all()
+        for y in x:
+            if i.id == y.id_producto.id:
+                tag = SubCategoriaEtiqueta.objects.get(pk=y.id_sub_categoria_etiqueta.id)
+                producto["etiqueta"].append(tag)
+
+        for pt in proTallas:
+            if pt.id_producto.id == i.id:
+                producto['tallas'].append(pt.id_talla.talla)
+
+        productos.append(producto)
+
+    contexto = { 
+        "data": productos
+    }
+
+    return render(request, "tienda/productos/productos.html", contexto)
+
 
 
 def productos_form(request):
@@ -475,11 +489,14 @@ def productos_crear(request):
 		fecha_creacion = request.POST.get("fecha_creacion")
 		categoria = CategoriaEtiqueta.objects.get(pk=request.POST.get("categoria"))
 		etiquetas = request.POST.getlist("etiqueta")
-		# foto = request.FILES["imagen"]
+		tallas = request.POST.getlist("talla")
+		foto = request.FILES["foto"]
+
 		if not re.match(r"^\d", precio):
-			messages.error(request, f"El precio solo puede llevar valores numericos")
+				messages.error(request, f"El precio solo puede llevar valores numericos")
 		if not re.match(r"^\d", inventario):
 			messages.error(request, f"El inventario solo puede llevar valores numericos")
+    		
 		# print(foto)
 		try:
 			q = Producto(
@@ -493,15 +510,23 @@ def productos_crear(request):
 			q.save()
 
 			for etiqueta_id in etiquetas:
-				etiqueta =SubCategoriaEtiqueta.objects.get(pk=etiqueta_id)
+				etiqueta = SubCategoriaEtiqueta.objects.get(pk=etiqueta_id)
+				
 				ProductoSubCategoria.objects.create(
 					id_producto = q,
 					id_sub_categoria_etiqueta = etiqueta
 				)
+
+			for talla_id in tallas:
+				talla = Tallas.objects.get(pk=talla_id)
+				ProductoTallas.objects.create(
+					id_producto = q,
+					id_talla = talla
+				)
    
 			messages.success(request, "Guardado correctamente!!")
 		except Exception as e:
-			messages.error(request, f"Error: No se enviaron datos...")
+			messages.error(request, f"Error: No se enviaron datos...{e}")
 		return redirect("productos_listar")
 
 	else:
