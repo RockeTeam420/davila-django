@@ -1,0 +1,47 @@
+{% extends 'tienda/inicio/base.html' %}
+{% load static %}
+
+{% block titulo %}Actualizar Usuario{% endblock %}
+
+{% block contenedor %}
+
+    <div style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+
+        <div style="border: 2px solid; width: 100%; max-width: 700px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+
+            <h1 class="titul" style="text-align: center;">Actualizar Usuario</h1>
+
+            <form action="{% url 'usuarios_actualizar' %}" method="post">
+                {% csrf_token %}
+
+                <div style="margin-bottom: 15px;">
+                    <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Nombre</label>
+                    <input class="form-control" type="text" name="nombre" value="{{ data.nombre }}" />
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Email</label>
+                    <input class="form-control" type="text" name="email" value="{{ data.email }}" />
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">password</label>
+                    <input class="form-control" type="text" name="password" value="{{ data.password }}" />
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">rol</label>
+                    <input class="form-control" type="text" name="rol" value="{{ data.rol }}"/>
+                </div>
+
+            
+
+                <div style="text-align: center;">
+                    <button type="submit" class="btn btn-success">Actualizar</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

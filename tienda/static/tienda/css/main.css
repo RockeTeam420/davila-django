@@ -1,0 +1,49 @@
+#main {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+    padding-top: 20px;
+}
+
+#filtro {
+    display: flex;
+    flex-direction: column;
+    align-items: normal;
+    height: 100%;
+    width: 40%;
+    padding: 1% 5% 1% 5%;
+    background-color: gainsboro;
+    margin-right: 30px;
+}
+
+#botones {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#categorias {
+    color: #000000;
+}
+
+#etiquetas {
+    color: black;
+}
+
+#productos {
+    display: flex;
+    flex-direction: column;
+    align-items: normal;
+    height: 100%;
+    width: 100%;
+
+
+}
+
+.custom-btn {
+    background-color: #000000;
+    color: white;
+
+}

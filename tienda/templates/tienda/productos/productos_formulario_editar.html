@@ -1,0 +1,57 @@
+{% extends 'tienda/inicio/base.html' %}
+{% load static %}
+
+{% block titulo %}Actualizar Producto{% endblock %}
+
+{% block contenedor %}
+
+<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+
+    <div style="border: 2px solid; width: 100%; max-width: 700px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+
+        <h1 class="titul" style="text-align: center;">Actualizar Producto ({{ data.id }})</h1>
+        <form action="{% url 'productos_actualizar' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ data.id }}">
+            <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Nombre</label>
+            <input class="form-control" type="text" name="nombre" value="{{ data.nombre }}" /><br>
+
+            <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Precio</label>
+            <input class="form-control" type="number" name="precio" value="{{ data.precio }}" /><br>
+
+            <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Información</label>
+            <input class="form-control" type="text" name="informacion" value="{{ data.informacion }}" /><br>
+
+            <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Inventario</label>
+            <input class="form-control" type="number" name="inventario" value="{{ data.inventario }}" /><br>
+
+            <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Fecha de Creación</label>
+            <input class="form-control" type="date" name="fecha_creacion" value="{{ data.fecha_creacion|date:'Y-m-d' }}" /><br>
+
+            <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Categoría</label>
+            <select class="form-control" name="categoria">
+                <option value="">Seleccione</option>
+                {% for c in categoria %}
+                    <option value="{{ c.id }}" {% if data.categoria.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
+                {% endfor %}
+            </select>
+            <br>
+
+            <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Etiqueta</label>
+            <select class="form-control" name="etiqueta">
+                <option value="">Seleccione</option>
+                {% for c in etiqueta %}
+                    <option value="{{ c.id }}" {% if data.etiqueta.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
+                {% endfor %}
+            </select>
+            <br>
+
+            <div style="text-align: center;">
+                <button type="submit" class="btn btn-success">Actualizar</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'tienda/inicio/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block titulo %}Devoluciones{% endblock %}
+
+{% block contenedor %}
+
+    <h1>Devoluciones</h1>
+    <a class="btn btn-success" href="{% url 'devoluciones_form' %}" style="width: 200px; display: inline-block; text-align: center;">Agregar</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo electronico</th>
+                <th>Telefono de contacto</th>
+                <th>Motivo de devolucion</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in data %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.nombre }}</td>
+                    <td>{{ r.email }}</td>
+                    <td>{{ r.telefono }}</td>
+                    <td>{{ r.descripcion }}</td>
+                    <td>
+                        <a class="btn btn-danger" href="javascript:eliminar('{% url 'devoluciones_eliminar' r.id %}')">Eliminar</a>
+                        <a class="btn btn-info" href="{% url 'devoluciones_formulario_editar' r.id %}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+    </nav>
+
+{% endblock %}

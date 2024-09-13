@@ -1,0 +1,37 @@
+{% extends 'tienda/inicio/base.html' %}
+{% load static %}
+
+{% block titulo %}Actualizar Devoluciones{% endblock %}
+
+{% block contenedor %}
+
+<div style="display: flex; justify-content: center; align-items: center; height: 70vh;">
+    <div style=" border: 2px solid; width: 100%; max-width: 700px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+
+        <h1 class="titul" style="text-align: center;" >Actualizar Devoluciones ({{ data.id }})</h1>
+        <form action="{% url 'devoluciones_actualizar' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ data.id }}">
+            <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Nombre</label>
+            <input class="form-control" type="text" name="nombre" value="{{ data.nombre }}" /><br>
+
+            <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Correo electronico</label>
+            <input class="form-control" type="email" name="email" value="{{ data.email }}" /><br>
+
+            <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Telefono</label>
+            <input class="form-control" type="number" name="telefono" value="{{ data.telefono }}" /><br>
+
+            <label class="form-control" style="border: 2px solid; padding: 10px; border-radius: 4px;">Motivo de devolucion</label>
+            <input class="form-control" type="text" name="descripcion" value="{{ data.descripcion}}" /><br>
+
+        
+            <div style="text-align: center;">
+                <button type="submit" class="btn btn-success">Actualizar</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}
