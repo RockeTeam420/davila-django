@@ -11,7 +11,7 @@ class Usuario(AbstractUser):
 	username = None
 	nombre = models.CharField(max_length=254)
 	email = models.EmailField(max_length=254, unique=True)
-	password = models.CharField(max_length=254)
+	# password = models.CharField(max_length=254)
 	ROLES = (
 		(1, "Administrador"),
 		(2, "Despachador"),
@@ -127,10 +127,11 @@ class Devoluciones(models.Model):
     email = models.EmailField(max_length=254, unique=True)
     telefono = models.IntegerField()
     descripcion = models.TextField()
-    
+    estado = models.IntegerField(choices=[(1, 'Pendiente'), (2, 'Aceptada'), (3, 'Rechazada')], default=1)
+
     def __str__(self):
         return self.nombre
-    
+
     
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):

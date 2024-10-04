@@ -2,7 +2,8 @@ from django.urls import path, include
 from . import views
 from rest_framework import routers
 from rest_framework.documentation import include_docs_urls
-
+from django.urls import path
+from .views import devoluciones, estado_devolucion
 
 router = routers.DefaultRouter()
 router.register(r'categoria', views.CategoriaViewSet)
@@ -12,7 +13,7 @@ router.register(r'categoria-etiqueta', views.CategoriaEtiquetaViewSet)
 router.register(r'subcategoria-etiqueta', views.SubCategoriaEtiquetaViewSet)
 router.register(r'producto-subcategoria', views.ProductoSubCategoriaViewSet)
 router.register(r'venta', views.VentaViewSet)
-router.register(r'detalle-venta', views.DetalleVentaViewSet)
+router.register(r'detalleVenta', views.DetalleVentaViewSet)
 
 urlpatterns = [
 	path('index/', views.index, name="index"),
@@ -33,7 +34,6 @@ urlpatterns = [
 	path("verificar_recuperar/", views.verificar_recuperar, name="verificar_recuperar"),
  
  	# Usuarios CRUD
-	
 	path("usuarios_listar/", views.usuarios, name="usuarios_listar"),
 	path("usuarios_form/", views.usuarios_form, name="usuarios_form"),
 	path("usuarios_crear/", views.usuarios_crear, name="usuarios_crear"),
@@ -58,6 +58,7 @@ urlpatterns = [
 	path("productos_formulario_editar/<int:id>", views.productos_formulario_editar, name="productos_formulario_editar"),
 	path("productos_actualizar/", views.productos_actualizar, name="productos_actualizar"),
 
+	#perfil
 	path("ver_perfil/", views.ver_perfil, name="ver_perfil"),
 	path("cc_formulario/", views.cambio_clave_formulario, name="cc_formulario"),
 	path("cambiar_clave/", views.cambiar_clave, name="cambiar_clave"),
@@ -71,8 +72,13 @@ urlpatterns = [
  
 	#ventas
 	path("realizar_venta/", views.realizar_venta, name="realizar_venta"),
+	path("ventas_ver/", views.ventas_ver, name="ventas_ver"),
 	path("prueba_correo/", views.prueba_correo, name="prueba_correo"),
     
+	#pedidos
+	path("realizar_pedido/", views.realizar_pedido, name="realizar_pedido"),
+	path("pedido_ver/", views.pedido_ver, name="pedido_ver"),
+	path("pedido_eliminar/<int:id>", views.pedido_eliminar, name="pedido_eliminar"),
 
 	#etiquetas
     path("etiquetas_listar/", views.etiquetas_listar, name="etiquetas_listar"),
@@ -85,7 +91,6 @@ urlpatterns = [
 	#Terminos y condiciones
  	path("term_y_cond/", views.term_y_cond, name="term_y_cond"),
   
-  
    	#tallas
 	path("tallas_listar/", views.tallas_listar, name="tallas_listar"),
 	path("talla_form/", views.tallas_form, name="tallas_form"),
@@ -94,12 +99,13 @@ urlpatterns = [
 	path("tallas_eliminar/<int:id>", views.tallas_eliminar, name="tallas_eliminar"),
  	path("tallas_editar/<int:id>", views.tallas_editar, name="tallas_editar"),
   
-  
   	#Ventas
 	path("venta_listar/", views.venta_listar, name="venta_listar"),
   
 	# CRUD de Devoluciones
 	path("devoluciones/", views.devoluciones, name="devoluciones"),
+    path('devoluciones/estado/<int:id>/', views.estado_devolucion, name='estado_devolucion'),
+	path("ver_devolucion/", views.ver_devolucion, name="ver_devolucion"),
 	path("devoluciones_form/", views.devoluciones_form, name="devoluciones_form"),
 	path("devoluciones_crear/", views.devoluciones_crear, name="devoluciones_crear"),
 	path("devoluciones_formulario_editar/<int:id>", views.devoluciones_formulario_editar, name="devoluciones_formulario_editar"),

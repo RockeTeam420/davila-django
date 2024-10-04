@@ -33,10 +33,6 @@
                     {% for e in r.etiqueta %}
                         <td> {{ e.nombre }}</td>
                     {% endfor %}
-                    <td>
-                        <a class="btn btn-danger" href="javascript:eliminar('{% url 'productos_eliminar' r.id %}')">Eliminar</a>
-                        <a class="btn btn-info" href="{% url 'productos_formulario_editar' r.id %}">Editar</a>
-                    </td>
                 </tr>
             {% endfor %}
         </tbody>

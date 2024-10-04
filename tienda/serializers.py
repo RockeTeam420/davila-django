@@ -14,10 +14,10 @@ class ProductoSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id', 'nombre', 'precio', 'inventario', 'categoria', 'foto']
 
     
-class UsuarioSerializer(serializers.HyperlinkedModelSerializer):
+class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
-        fields = ['id', 'nombre', 'correo','clave', 'ROLES', 'rol', 'foto']
+        fields = ['id', 'nombre', 'email', 'rol', 'foto']
 
 class CategoriaEtiquetaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -43,4 +43,4 @@ class VentaSerializer(serializers.HyperlinkedModelSerializer):
 class DetalleVentaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = DetalleVenta
-        fields = ['id', 'venta', 'producto', 'cantidad', 'precio_historico']
+        fields = ['id', 'venta', 'producto', 'cantidad', 'precio_historico', ]

@@ -1,0 +1,53 @@
+{% extends 'tienda/inicio/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block titulo %}Ventas{% endblock %}
+
+{% block contenedor %}
+
+<h1>Ventas realizadas</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Fecha de Venta</th>
+                <th>Estado</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Sub total</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in ventas_con_detalles %}
+                {% for detalle in item.detalles %}
+                    <tr>
+                        {% if forloop.first %}
+                            <td rowspan="{{ item.detalles.count }}">{{ item.venta.id }}</td>
+                            <td rowspan="{{ item.detalles.count }}">{{ item.venta.usuario }}</td>
+                            <td rowspan="{{ item.detalles.count }}">{{ item.venta.fecha_venta }}</td>
+                            <td rowspan="{{ item.detalles.count }}">{{ item.venta.get_estado_display }}</td>
+                        {% endif %}
+                        <td>{{ detalle.producto.nombre }}</td>
+                        <td>{{ detalle.cantidad }}</td>
+                        <td>${{ detalle.precio_historico }}</td>
+                        <td class="text-end"><strong>${{ total|floatformat:0|intcomma }}</strong></td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+    </nav>
+
+{% endblock %}

@@ -22,7 +22,7 @@
                 </td>
                 <td>
                     <input type="hidden" name="id" id="id_{{ p.id }}" value="{{ p.id }}" />
-                    <input oninput="actualizar_totales_carrito(`{% url 'actualizar_totales_carrito' p.id %}`, {{ p.id }});" 
+                    <input style="width: 150px;" oninput="actualizar_totales_carrito(`{% url 'actualizar_totales_carrito' p.id %}`, {{ p.id }});" 
                     type="number" name="cantidad" id="cantidad_carrito_{{ p.id }}" min="1" max="{{ p.inventario }}" value="{{ p.cantidad }}" size="3"  />
                 </td>
 

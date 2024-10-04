@@ -13,10 +13,11 @@
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Correo electronico</th>
-                <th>Telefono de contacto</th>
-                <th>Motivo de devolucion</th>
-
+                <th>Correo electrónico</th>
+                <th>Teléfono de contacto</th>
+                <th>Motivo de devolución</th>
+                <th>Estado</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -27,8 +28,9 @@
                     <td>{{ r.email }}</td>
                     <td>{{ r.telefono }}</td>
                     <td>{{ r.descripcion }}</td>
+                    <td>{{ r.get_estado_display }}</td> 
                     <td>
-                        <a class="btn btn-danger" href="javascript:eliminar('{% url 'devoluciones_eliminar' r.id %}')">Eliminar</a>
+                        <a class="btn btn-secondary" href="javascript:eliminar('{% url 'devoluciones_eliminar' r.id %}')">Cancelar</a>
                         <a class="btn btn-info" href="{% url 'devoluciones_formulario_editar' r.id %}">Editar</a>
                     </td>
                 </tr>

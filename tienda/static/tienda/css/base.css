@@ -49,3 +49,35 @@ footer {
     padding: 3%;
     
 }
+
+.product-card {
+    width: 200px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.facebook{
+    color: #0b82e7
+}
+
+.whatsapp{
+    color: #41c051;
+}
+
+.instagram{
+    color: #f15b30
+}
+
+.facebook:hover{
+    color: black;
+}
+
+.whatsapp:hover{
+    color: black;
+}
+
+.instagram:hover{
+    color: black;
+}

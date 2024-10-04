@@ -81,8 +81,8 @@ class CategoriaViewSet(viewsets.ModelViewSet):
 
 
 class UsuarioViewSet(viewsets.ModelViewSet):	
-	# authentication_classes = [TokenAuthentication]
-	permission_classes = [IsAuthenticated]
+	authentication_classes = [TokenAuthentication]
+	#permission_classes = [IsAuthenticated]
 	queryset = Usuario.objects.all()
 	serializer_class = UsuarioSerializer
 
@@ -617,27 +617,30 @@ def cambio_clave_formulario(request):
 
 
 def cambiar_clave(request):
-	if request.method == "POST":
-		logueo = request.session.get("logueo", False)
-		q = Usuario.objects.get(pk=logueo["id"])
+    if request.method == "POST":
+        logueo = request.session.get("logueo", False)
+        try:
+            q = Usuario.objects.get(pk=logueo["id"])
+        except Usuario.DoesNotExist:
+            messages.error(request, "Usuario no encontrado...")
+            return redirect('cc_formulario')
 
-		c1 = request.POST.get("nueva1")
-		c2 = request.POST.get("nueva2")
+        c1 = request.POST.get("nueva1")
+        c2 = request.POST.get("nueva2")
 
-		if q.clave == request.POST.get("clave"):
-			if c1 == c2:
-				# cambiar clave en DB
-				q.clave = c1
-				q.save()
-				messages.success(request, "Contraseña guardada correctamente!!")
-			else:
-				messages.info(request, "Las contraseñas nuevas no coinciden...")
-		else:
-			messages.error(request, "Contraseña no válida...")
-	else:
-		messages.warning(request, "Error: No se enviaron datos...")
+        if q.check_password(request.POST.get("clave")):
+            if c1 == c2:
+                q.set_password(c1)
+                q.save()
+                messages.success(request, "Contraseña guardada correctamente!!")
+            else:
+                messages.info(request, "Las contraseñas nuevas no coinciden...")
+        else:
+            messages.error(request, "Contraseña no válida...")
+    else:
+        messages.warning(request, "Error: No se enviaron datos...")
 
-	return redirect('cc_formulario')
+    return redirect('cc_formulario')
 
 
 def carrito_add(request):
@@ -794,9 +797,179 @@ def realizar_venta(request):
 
     return redirect("inicio")
 
+def ventas_ver(request):
+    try:
+        ventas = Venta.objects.all()
+        ventas_con_detalles = []
+        
+        if request.method == "POST":
+            id_producto = int(request.POST.get("id"))
+            cantidad = int(request.POST.get("cantidad", 0))
+            
+            if cantidad <= 0:
+                raise ValueError("Cantidad debe ser mayor que 0")
+
+            producto = Producto.objects.get(id=id_producto)
+            
+            for venta in ventas:
+                detalles = DetalleVenta.objects.filter(venta=venta)
+                for detalle in detalles:
+                    if detalle.producto.id == id_producto:
+                        if producto.inventario >= (detalle.cantidad + cantidad):
+                            detalle.cantidad += cantidad
+                            detalle.subtotal = detalle.cantidad * detalle.precio_historico
+                            detalle.save()
+                        break
+                ventas_con_detalles.append({
+                    'venta': venta,
+                    'detalles': detalles
+                })
+        
+        else:
+            for venta in ventas:
+                detalles = DetalleVenta.objects.filter(venta=venta)
+                ventas_con_detalles.append({
+                    'venta': venta,
+                    'detalles': detalles
+                })
+        
+        contexto = {
+            'ventas_con_detalles': ventas_con_detalles
+        }
+        
+        return render(request, "tienda/ventas/ventas_ver.html", contexto)
+    
+    except Exception as e:
+        messages.error(request, f"Ocurrió un error al recuperar las ventas: {e}")
+        return render(request, "tienda/ventas/ventas_ver.html", {'ventas_con_detalles': []})
 
 @transaction.atomic
 def guardar_venta(request):
+	carrito = request.session.get("carrito", False)
+	logueo = request.session.get("logueo", False)
+	try:
+		r = Venta(usuario=Usuario.objects.get(pk=logueo["id"]))
+		r.save()
+
+		for i, p in enumerate(carrito):
+			try:
+				pro = Producto.objects.get(pk=p["id"])
+				print(f"ok producto {p['producto']}")
+			except Producto.DoesNotExist:
+				# elimino el producto no existente del carrito...
+				carrito.pop(i)
+				request.session["carrito"] = carrito
+				request.session["items"] = len(carrito)
+				raise Exception(f"El producto '{p['producto']}' ya no existe")
+
+			if int(p["cantidad"]) > pro.inventario:
+				raise Exception(f"La cantidad del producto '{p['producto']}' supera el inventario")
+
+			det = DetalleVenta(
+				venta=r,
+				producto=pro,
+				cantidad=int(p["cantidad"]),
+				precio_historico=int(p["precio"])
+			)
+			det.save()
+		messages.success(request, "Venta realizada correctamente!!")
+	except Exception as e:
+		transaction.set_rollback(True)
+		messages.error(request, f"Error: {e}")
+
+	return redirect("inicio")
+
+def realizar_pedido(request):
+    try:
+        logueo = request.session.get("logueo")
+        usuario = Usuario.objects.get(pk=logueo["id"])
+        nueva_venta = Venta.objects.create(usuario=usuario)
+
+        carrito = request.session.get("carrito", [])
+        for item in carrito:
+            producto = Producto.objects.get(pk=item["id"])
+            cantidad = item["cantidad"]
+
+            detalle_venta = DetalleVenta.objects.create(
+                venta=nueva_venta,
+                producto=producto,
+                cantidad=cantidad,
+                precio_historico=producto.precio
+            )
+
+            producto.inventario -= cantidad
+            producto.save()
+
+        request.session["carrito"] = []
+        request.session["items"] = 0
+
+        messages.success(request, "¡La compra se realizó con éxito!")
+
+    except Producto.DoesNotExist as e:
+        messages.error(request, f"Error al procesar la compra: {e}")
+    except Exception as e:
+        messages.error(request, f"Ocurrió un error al procesar la compra: {e}")
+
+    return redirect("inicio")
+
+def pedido_ver(request):
+    try:
+        ventas = Venta.objects.all()
+        ventas_con_detalles = []
+        
+        if request.method == "POST":
+            id_producto = int(request.POST.get("id"))
+            cantidad = int(request.POST.get("cantidad", 0))
+            
+            if cantidad <= 0:
+                raise ValueError("Cantidad debe ser mayor que 0")
+
+            producto = Producto.objects.get(id=id_producto)
+            
+            for venta in ventas:
+                detalles = DetalleVenta.objects.filter(venta=venta)
+                for detalle in detalles:
+                    if detalle.producto.id == id_producto:
+                        if producto.inventario >= (detalle.cantidad + cantidad):
+                            detalle.cantidad += cantidad
+                            detalle.subtotal = detalle.cantidad * detalle.precio_historico
+                            detalle.save()
+                        break
+                ventas_con_detalles.append({
+                    'venta': venta,
+                    'detalles': detalles
+                })
+        
+        else:
+            for venta in ventas:
+                detalles = DetalleVenta.objects.filter(venta=venta)
+                ventas_con_detalles.append({
+                    'venta': venta,
+                    'detalles': detalles
+                })
+        
+        contexto = {
+            'ventas_con_detalles': ventas_con_detalles
+        }
+        
+        return render(request, "tienda/pedidos/pedido_ver.html", contexto)
+    
+    except Exception as e:
+        messages.error(request, f"Ocurrió un error al recuperar las ventas: {e}")
+        return render(request, "tienda/pedidos/pedido_ver.html", {'ventas_con_detalles': []})
+
+def pedido_eliminar(request, id):
+    try:
+        venta = get_object_or_404(Venta, pk=id)
+        venta.delete()
+        messages.success(request, "Venta eliminada correctamente!!")
+    except Exception as e:
+        messages.error(request, f"Error: {e}")
+
+    return redirect("ventas_ver")
+
+@transaction.atomic
+def guardar_pedido(request):
 	carrito = request.session.get("carrito", False)
 	logueo = request.session.get("logueo", False)
 	try:
@@ -929,8 +1102,27 @@ def term_y_cond(request):
 
 def devoluciones(request):
     q = Devoluciones.objects.all()
-    contexto = {"data": q}
+    print(f"Devoluciones recuperadas: {q.count()}")  # Para depuración
+    estados = Devoluciones._meta.get_field('estado').choices
+    contexto = {"data": q, "estados": estados}
     return render(request, "tienda/devoluciones/devoluciones.html", contexto)
+
+
+def ver_devolucion(request):
+	q = Devoluciones.objects.all()
+	contexto = {"data": q}
+	return render(request, "tienda/devoluciones/ver_devolucion.html", contexto)
+
+from django.shortcuts import get_object_or_404, redirect
+
+def estado_devolucion(request, id):
+    if request.method == "POST":
+        devolucion = get_object_or_404(Devoluciones, id=id)
+        nuevo_estado = request.POST.get('estado')
+        if nuevo_estado:
+            devolucion.estado = int(nuevo_estado)
+            devolucion.save()
+        return redirect('ver_devolucion')
 
 def devoluciones_form(request):
 	q = CategoriaEtiqueta.objects.all()
@@ -938,27 +1130,26 @@ def devoluciones_form(request):
 	return render(request, "tienda/devoluciones/devoluciones_form.html", contexto)
 
 def devoluciones_crear(request):
-	if request.method == "POST":
-		nombre = request.POST.get("nombre")
-		email = request.POST.get("email")
-		telefono = request.POST.get("telefono")
-		descripcion = request.POST.get("descripcion")
-		try:
-			q = Devoluciones(
-				nombre=nombre,
-				email=email,
-				telefono=telefono,
-				descripcion= descripcion,
-			)
-			q.save()
-			messages.success(request, "Guardado correctamente!!")
-		except Exception as e:
-			messages.error(request, f"Error: No se enviaron datos...")
-		return redirect("devoluciones")
+    if request.method == "POST":
+        nombre = request.POST.get("nombre")
+        email = request.POST.get("email")
+        telefono = request.POST.get("telefono")
+        descripcion = request.POST.get("descripcion")
+        print(f"Datos recibidos: {nombre}, {email}, {telefono}, {descripcion}")  # Para depuración
+        try:
+            q = Devoluciones(
+                nombre=nombre,
+                email=email,
+                telefono=telefono,
+                descripcion=descripcion,
+                estado=1,  # Asigna un estado por defecto
+            )
+            q.save()
+            messages.success(request, "Guardado correctamente!!")
+        except Exception as e:
+            messages.error(request, f"Error: {e}")
+        return redirect("devoluciones")
 
-	else:
-		messages.warning(request, "Error: No se enviaron datos...")
-		return redirect("devoluciones")
 
 def devoluciones_formulario_editar(request, id):
 	q = Devoluciones.objects.get(pk=id)
@@ -1121,6 +1312,4 @@ def venta_listar(request):
 
 def venta_form(request):
     	return render(request, "tienda/ventas/ventas_form.html")
- 
-
 

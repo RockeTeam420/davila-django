@@ -1,0 +1,108 @@
+{% extends 'tienda/inicio/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block titulo %}Pedidos{% endblock %}
+
+{% block contenedor %}
+
+<h1>Tus pedidos</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Fecha de Venta</th>
+            <th>Estado</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Sub total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in ventas_con_detalles %}
+            {% for detalle in item.detalles %}
+                <tr>
+                    {% if forloop.first %}
+                        <td rowspan="{{ item.detalles.count }}">{{ item.venta.id }}</td>
+                        <td rowspan="{{ item.detalles.count }}">{{ item.venta.usuario }}</td>
+                        <td rowspan="{{ item.detalles.count }}">{{ item.venta.fecha_venta }}</td>
+                        <td rowspan="{{ item.detalles.count }}">{{ item.venta.get_estado_display }}</td>
+                    {% endif %}
+                    <td>{{ detalle.producto.nombre }}</td>
+                    <td>{{ detalle.cantidad }}</td>
+                    <td>${{ detalle.precio_historico }}</td>
+                    <td>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modal-{{ item.venta.id }}">
+                            <i class="bi bi-eye-fill"></i>
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="modal-{{ item.venta.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background-color:#212529;">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                            <img src="{% static 'tienda/img/icono.png' %}" alt="Logo" style="width:100px; padding:10px" class="rounded-pill">
+                                        </h1>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>Detalles de la Venta (ID: {{ item.venta.id }})</h5>
+                                        <div class="row">
+                                            {% for detalle in item.detalles %}
+                                                <div class="col-md-6 mb-6">
+                                                    <div class="product-card" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+                                                        <div style="display: flex; justify-content: space-between;">
+                                                            <div>
+                                                                <h6>Producto:</h6>
+                                                                <p>{{ detalle.producto.nombre }}</p>
+                                                            </div>
+                                                            <div>
+                                                                <h6>Subtotal:</h6>
+                                                                <p>${{ detalle.precio_historico }}</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6>Cantidad:</h6>
+                                                        <p>{{ detalle.cantidad }}</p>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% if forloop.first %}
+                                            <h6>Estado</h6>
+                                            <p>{{ item.venta.get_estado_display }}</p>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="modal-footer" style="background-color: #ffc107; display: flex; justify-content: space-between;">
+                                        <h6>Dirección<p>Calle 123 # 5 - 84</p></h6>
+                                        <h6>Contacto<p>355 672 8462</p></h6>
+                                        <h6>Redes Sociales<p style="display: flex; justify-content: space-between;">
+                                            <a class="facebook" href="#"><i class="bi bi-facebook"></i></a>
+                                            <a class="whatsapp" href="#"><i class="bi bi-whatsapp"></i></a>
+                                            <a class="instagram" href="#"><i class="bi bi-instagram"></i></a>
+                                        </p></h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+    </ul>
+</nav>
+
+{% endblock %}
