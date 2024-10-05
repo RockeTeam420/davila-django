@@ -150,7 +150,7 @@ function actualizar_totales_carrito(url, id){
             contenido.html(respuesta);
         }
         else{
-            location.href="/tienda/inicio/";
+            location.href="http://127.0.0.1:8000";
         }
     })
     .fail(function(respuesta){

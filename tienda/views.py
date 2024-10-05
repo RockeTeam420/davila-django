@@ -548,7 +548,9 @@ def productos_formulario_editar(request, id):
 	q = Producto.objects.get(pk=id)
 	c = CategoriaEtiqueta.objects.all()
 	e = SubCategoriaEtiqueta.objects.all()
-	contexto = {"data": q, "categoria": c, "etiqueta":e}
+	t = Tallas.objects.all()
+	pt = ProductoTallas.objects.all()
+	contexto = {"data": q, "categoria": c, "etiqueta":e, "talla":t, "proTallas":pt}
 	return render(request, "tienda/productos/productos_formulario_editar.html", contexto)
 
 def productos_actualizar(request):
@@ -560,6 +562,7 @@ def productos_actualizar(request):
         fecha_creacion = request.POST.get("fecha_creacion")
         categoria_id = request.POST.get("categoria")
         etiquetas_ids = request.POST.getlist("etiqueta")
+        tallas = request.POST.getlist("tallas")
 
         # Validación básica de los campos de precio e inventario
         if not precio.isdigit():
@@ -757,9 +760,15 @@ def actualizar_totales_carrito(request, id_producto):
 	if carrito != False:
 		for i, item in enumerate(carrito):
 			if item["id"] == id_producto:
-				item["cantidad"] = int(cantidad)
-				item["subtotal"] = int(cantidad) * item["precio"]
-				break
+				q = Producto.objects.get(pk=id_producto)
+				if q.inventario >= int(cantidad) and int(cantidad) > 0:
+					item["cantidad"] = int(cantidad)
+					item["subtotal"] = int(cantidad) * item["precio"]
+					break
+				else:
+					print("Cantidad supera inventario...")
+					messages.warning(request, "No se puede agregar, no hay suficiente inventario.")
+					return HttpResponse("Error")
 		else:
 			messages.warning(request, "No se encontró el ítem en el carrito.")
 
