@@ -17,6 +17,7 @@
                 <th>Teléfono de contacto</th>
                 <th>Motivo de devolución</th>
                 <th>Estado</th>
+                <th>Imagen</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -28,7 +29,22 @@
                     <td>{{ r.email }}</td>
                     <td>{{ r.telefono }}</td>
                     <td>{{ r.descripcion }}</td>
-                    <td>{{ r.get_estado_display }}</td> 
+                    <td>
+                        {% if r.estado == 1 %}
+                            <span style="color: gray;">Pendiente</span>
+                        {% elif r.estado == 2 %}
+                            <span style="color: green;">Aceptada</span>
+                        {% elif r.estado == 3 %}
+                            <span style="color: red;">Rechazada</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if r.image %}
+                            <img src="{{ r.image.url }}" alt="Imagen de {{ r.nombre }}" style="width: 100px; height: auto;" />
+                        {% else %}
+                            No hay imagen
+                        {% endif %}
+                    </td>
                     <td>
                         <a class="btn btn-secondary" href="javascript:eliminar('{% url 'devoluciones_eliminar' r.id %}')">Cancelar</a>
                         <a class="btn btn-info" href="{% url 'devoluciones_formulario_editar' r.id %}">Editar</a>
@@ -36,6 +52,7 @@
                 </tr>
             {% endfor %}
         </tbody>
+        
     </table>
 
     <nav aria-label="Page navigation example">

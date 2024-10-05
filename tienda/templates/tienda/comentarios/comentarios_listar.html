@@ -1,0 +1,37 @@
+{% extends 'tienda/inicio/base.html' %}
+{% load static %}
+
+{% block titulo %}Listar comentarios{% endblock %}
+
+{% block contenedor %}
+
+<h1>COMENTARIOS</h1>
+<a class="btn btn-success" href="{% url 'comentarios_form' %}">Agregar</a>
+<br>
+
+<div class="row">
+    {% for c in comentarios %}
+        <div class="col-md-2 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title" style="display: flex; justify-content: space-between;">Comentario<i class="bi bi-hand-thumbs-up-fill"></i></h5>
+                    <p class="card-text">{{ c.comentarios }}</p>
+                    <a class="btn btn-danger" href="javascript:eliminar('{% url 'comentarios_eliminar' c.id %}')">Eliminar</a>
+                    <a class="btn btn-primary" href="{% url 'comentarios_editar' c.id %}">Editar</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+    </ul>
+</nav>
+
+{% endblock %}

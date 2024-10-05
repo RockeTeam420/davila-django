@@ -41,17 +41,6 @@
                         </li>
                     {% endif %}
 
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
-                            data-bs-toggle="dropdown">Pedido</a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item" href="solicitarPedido.html">Ver Pedidos</a>
-                            </li>
-                        </ul>
-                    </li>
-
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
                             data-bs-toggle="dropdown">Devoluciones</a>
@@ -97,6 +86,15 @@
                             <ul class="dropdown-menu">
                                 <li>
                                     <a class="dropdown-item" href="{% url 'pedido_ver' %}">Ver pedidos</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle nav-link active" href="#" role="button"
+                                data-bs-toggle="dropdown">Comentarios</a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="{% url 'comentarios_listar' %}" class="dropdown-item">Ver comentarios</a>
                                 </li>
                             </ul>
                         </li>

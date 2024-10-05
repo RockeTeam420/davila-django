@@ -9,10 +9,11 @@ from django.conf import settings
 from django.core.mail import BadHeaderError, EmailMessage
 import re
 from .crypt import *
-
+from .forms import ImageUploadForm
+from django.shortcuts import render, redirect
+from .forms import ImageUploadForm
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -24,7 +25,6 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import make_password
 from django.db.models.signals import post_save
 
-
 # Importamos todos los modelos de la base de datos
 from .models import *
 
@@ -33,6 +33,10 @@ from .models import *
 class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
+
+class DevolucionesViewSet(viewsets.ModelViewSet):
+    queryset = Devoluciones.objects.all()
+    serializer_class = DevolucionesSerializer
 
 class ProductoViewSet(viewsets.ModelViewSet):
     queryset = Producto.objects.all()
@@ -1102,8 +1106,8 @@ def term_y_cond(request):
 
 def devoluciones(request):
     q = Devoluciones.objects.all()
-    print(f"Devoluciones recuperadas: {q.count()}")  # Para depuración
     estados = Devoluciones._meta.get_field('estado').choices
+    print(f"Estados: {estados}")  # Para depuración
     contexto = {"data": q, "estados": estados}
     return render(request, "tienda/devoluciones/devoluciones.html", contexto)
 
@@ -1117,12 +1121,23 @@ from django.shortcuts import get_object_or_404, redirect
 
 def estado_devolucion(request, id):
     if request.method == "POST":
-        devolucion = get_object_or_404(Devoluciones, id=id)
-        nuevo_estado = request.POST.get('estado')
-        if nuevo_estado:
+        nuevo_estado = request.POST.get("estado")
+        print(f"Nuevo estado recibido: {nuevo_estado}")  # Para depuración
+        if nuevo_estado is None:
+            messages.error(request, "No se recibió un estado válido.")
+            return redirect("devoluciones")
+
+        try:
+            devolucion = Devoluciones.objects.get(pk=id)
             devolucion.estado = int(nuevo_estado)
             devolucion.save()
-        return redirect('ver_devolucion')
+            messages.success(request, "Estado actualizado correctamente.")
+        except Exception as e:
+            messages.error(request, f"Error al actualizar el estado: {e}")
+    else:
+        messages.warning(request, "No se enviaron datos.")
+    
+    return redirect("devoluciones")
 
 def devoluciones_form(request):
 	q = CategoriaEtiqueta.objects.all()
@@ -1135,14 +1150,17 @@ def devoluciones_crear(request):
         email = request.POST.get("email")
         telefono = request.POST.get("telefono")
         descripcion = request.POST.get("descripcion")
-        print(f"Datos recibidos: {nombre}, {email}, {telefono}, {descripcion}")  # Para depuración
+        image = request.FILES.get("image") 
+        print(f"Datos recibidos: {nombre}, {email}, {telefono}, {descripcion}")
+        
         try:
             q = Devoluciones(
                 nombre=nombre,
                 email=email,
                 telefono=telefono,
                 descripcion=descripcion,
-                estado=1,  # Asigna un estado por defecto
+                estado=1,
+                image=image
             )
             q.save()
             messages.success(request, "Guardado correctamente!!")
@@ -1157,28 +1175,33 @@ def devoluciones_formulario_editar(request, id):
 	return render(request, "tienda/devoluciones/devoluciones_formulario_editar.html", contexto)
 
 def devoluciones_actualizar(request):
-	if request.method == "POST":
-		id = request.POST.get("id")
-		nombre = request.POST.get("nombre")
-		email = request.POST.get("email")
-		telefono = request.POST.get("telefono")
-		descripcion = request.POST.get("descripcion")
-		
-		try:
-			q = Devoluciones.objects.get(pk=id)
-			q.nombre = nombre
-			q.email = email
-			q.telefono = telefono
-			q.descripcion = descripcion
-			
-			q.save()
-			messages.success(request, "Devolucion actualizada correctamente!!")
-		except Exception as e:
-			messages.error(request, f"Error {e}")
-	else:
-		messages.warning(request, "Error: No se enviaron datos...")
+    if request.method == "POST":
+        id = request.POST.get("id")
+        nombre = request.POST.get("nombre")
+        email = request.POST.get("email")
+        telefono = request.POST.get("telefono")
+        descripcion = request.POST.get("descripcion")
+        image = request.FILES.get("image")
 
-	return redirect("devoluciones")
+        try:
+            q = Devoluciones.objects.get(pk=id)
+            q.nombre = nombre
+            q.email = email
+            q.telefono = telefono
+            q.descripcion = descripcion
+            
+            if image:
+                q.image = image
+            
+            q.save()
+            messages.success(request, "Devolución actualizada correctamente!!")
+        except Exception as e:
+            messages.error(request, f"Error {e}")
+    else:
+        messages.warning(request, "Error: No se enviaron datos...")
+
+    return redirect("devoluciones")
+
 
 def devoluciones_eliminar(request, id):
 	try:
@@ -1313,3 +1336,79 @@ def venta_listar(request):
 def venta_form(request):
     	return render(request, "tienda/ventas/ventas_form.html")
 
+def cargar_image(request):
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.cleaned_data['image']
+            return redirect('devoluciones_form')
+    else:
+        form = ImageUploadForm()
+    
+    return render(request, 'cargar.html', {'form': form})
+
+from django.utils import timezone
+
+def comentarios_listar(request):
+    comentarios = Comentarios.objects.all()
+    contexto = {"comentarios":comentarios}
+    return render (request, "tienda/comentarios/comentarios_listar.html", contexto)
+
+def comentarios_form(request):
+	return render(request, "tienda/comentarios/comentarios_form.html")
+
+def comentarios_crear(request):
+    if request.method == "POST":
+        comentarios = request.POST.get("comentarios")
+        if comentarios is None:
+            messages.error(request, "El comentario no puede estar vacío.")
+            return redirect("comentarios_form")
+
+        try:
+            q = Comentarios(
+				comentarios = comentarios,
+				descripcion=request.POST.get("descripcion", ""),
+				fecha_creacion=timezone.now()
+			)
+            q.save()
+            messages.success(request, "Guardado correctamente!")
+        except Exception as e:
+            messages.error(request, f"Error: {e}")
+        return redirect("comentarios_listar")
+
+
+def comentarios_editar(request, id):
+	q = Comentarios.objects.get(pk=id)
+	contexto = {"comentarios": q}
+	return render(request, "tienda/comentarios/comentarios_editar.html", contexto)
+	         
+
+def comentarios_actualizar(request):
+    if request.method == "POST":
+        id = request.POST.get('id')
+        comentarios = request.POST.get("comentarios")
+        
+        try:
+            q = Comentarios.objects.get(pk=id)
+            if comentarios: 
+                q.comentarios = comentarios
+                q.save()
+                messages.success(request, "Guardado correctamente!!")
+            else:
+                messages.error(request, "El comentario no puede estar vacío.")
+        except Comentarios.DoesNotExist:
+            messages.error(request, "Comentario no encontrado.")
+        except Exception as e:
+            messages.error(request, f"Error: {e}")
+
+        return redirect("comentarios_listar")
+
+			
+def comentarios_eliminar(request, id):
+	try:
+		q = Comentarios.objects.get(pk=id)
+		q.delete()
+		messages.success(request, "Comentario eliminada correctamente!!")
+	except Exception as e:
+		messages.error(request, f"Error: {e}")
+	return redirect("comentarios_listar")

@@ -44,3 +44,9 @@ class DetalleVentaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = DetalleVenta
         fields = ['id', 'venta', 'producto', 'cantidad', 'precio_historico', ]
+
+class DevolucionesSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Devoluciones
+        fields = ['nombre', 'email', 'telefono', 'descripcion', 'estado', 'image']  
+

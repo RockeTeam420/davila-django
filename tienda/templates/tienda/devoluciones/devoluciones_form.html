@@ -4,9 +4,8 @@
 {% block titulo %}Crear Devolucion{% endblock %}
 
 {% block contenedor %}
-
     <h1 class="titul">Crear Devolucion</h1>
-    <form action="{% url 'devoluciones_crear' %}" method="post">
+    <form action="{% url 'devoluciones_crear' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <label class="form-control">Nombre</label>
         <input class="form-control" type="text" name="nombre" /><br>
@@ -20,9 +19,13 @@
         <label class="form-control">Motivo de devolucion</label>
         <input class="form-control" type="text" name="descripcion" /><br>
 
+        <label class="form-control">Cargar Imagen</label>
+        <input class="form-control" type="file" name="image" />
+        <br>
 
 
+        {% csrf_token %}
+        {{ form.image }}  <!-- Esto renderiza el campo de imagen -->
         <button type="submit" class="btn btn-success">Guardar</button>
     </form>
-
 {% endblock %}
